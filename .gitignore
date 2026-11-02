@@ -1,0 +1,27 @@
+# Ignorar TODO y permitir solo lo que queremos versionar.
+*
+
+# Archivos que SÍ se suben al repo
+!.gitignore
+!PUNTOS_DE_ATENCION.md
+!Lab_4_AVCV_.ipynb
+
+# Ignorado explícitamente (ya cubierto por "*", se deja como documentación)
+
+# db.zip (~970 MB) y db/ (imágenes): superan el límite de GitHub (100 MB por archivo).
+# Se comparten por Google Drive, o se suben como asset de una Release de GitHub
+db.zip
+db/
+data/
+
+# Resultados y modelos entrenados (pesados): guardarlos en Google Drive
+outputs/
+*.pt
+*.pth
+
+# Material de la asignatura (PDFs y diapositivas)
+Slides/
+*.pdf
+
+# Checkpoints de Jupyter
+.ipynb_checkpoints/
