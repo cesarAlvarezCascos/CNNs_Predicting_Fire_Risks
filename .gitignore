@@ -4,6 +4,7 @@
 # Archivos que SÍ se suben al repo
 !.gitignore
 !PUNTOS_DE_ATENCION.md
+!README.md
 !Lab_4_AVCV_.ipynb
 
 # Ignorado explícitamente (ya cubierto por "*", se deja como documentación)
