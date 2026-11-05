@@ -6,6 +6,9 @@
 !PUNTOS_DE_ATENCION.md
 !README.md
 !Lab_4_AVCV_.ipynb
+# Resultados de la búsqueda de hiperparámetros (CSV pequeños, para compartirlos entre los 2 ordenadores)
+!search/
+!search/*.csv
 
 # Ignorado explícitamente (ya cubierto por "*", se deja como documentación)
 
