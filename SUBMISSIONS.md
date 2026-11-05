@@ -44,7 +44,12 @@ La "media de las 10 últimas épocas" es la métrica robusta. El máximo de una 
 | 4 | `p4_A_inv` | p2_07 + `class_weights='inv'` | 0.419 | 0.437 | 0.413 | **empeora (−0.037)**, confirma lo anterior |
 | 4 | **`p4_09_B_wide48x2`** | p2_09 + 48 filtros y 2 convs por bloque | **0.483** | **0.496** | 0.525 | **mejora (+0.030)** |
 | 4 | `p4_09_D_wide64x2` | p2_09 + 64 filtros y 2 convs por bloque | — | — | — | interrumpido en la época 5 |
+| 4 (Kaggle) | `p4_A_inv` | p2_07 + `inv` (repetición en Kaggle T4) | 0.421 | 0.436 | 0.412 | empeora (−0.036). Repetido en Colab daba 0.419: **misma config en otra GPU → ±0.002** |
+| 4 (Kaggle) | `p4_B_wide48x2` | p2_07 + 48 filtros y 2 convs por bloque | 0.480 | 0.488 | 0.495 | **mejora (+0.024)**: confirma B en la segunda base |
+| 4 (Kaggle) | `p4_C_wide_noreg` | p2_07 + 48×2, dropout 0, aug light | 0.482 | 0.493 | 0.541 | mejora (+0.026); prácticamente igual que `p4_09_B` (solo cambian lr/wd) |
 
-Pendiente: resultados de Kaggle (A/B/C sobre `p2_07`, `experiments/Lab_4_p4_kaggle.ipynb`).
+Conclusión de la fase 4: **la capacidad es lo que importa.** Las tres variantes anchas (`p4_09_B`, `p4_B`, `p4_C`) quedan entre 0.480 y 0.483 en la media de las 10 últimas épocas, aunque difieren en lr, weight decay, dropout y augmentation. Los pesos `inv` empeoran en las dos bases.
+
+Notebook de Kaggle: `experiments/Lab_4_p4_kaggle.ipynb` (Tesla T4, `preload=False`, 4 workers).
 
 Archivos: `search/results_p*_m*.csv` (todas las pruebas), `search/*_epochs.csv` (F1 y loss de train/val por época), `search/p3_epochs_f1.csv` (tabla de la fase 3).
