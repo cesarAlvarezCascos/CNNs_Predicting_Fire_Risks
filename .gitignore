@@ -13,6 +13,11 @@
 # Notebooks auxiliares de experimentos (Kaggle, etc.)
 !experiments/
 !experiments/*.ipynb
+# Modelo final: manifiesto (config, hashes, versiones) y predicciones enviadas (los .pt van en Drive / Release)
+!final/
+!final/*.json
+!final/*.csv
+!SUBMISSIONS.md
 
 # Ignorado explícitamente (ya cubierto por "*", se deja como documentación)
 
