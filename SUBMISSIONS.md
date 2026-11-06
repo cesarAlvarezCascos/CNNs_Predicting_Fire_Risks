@@ -52,4 +52,36 @@ Conclusión de la fase 4: **la capacidad es lo que importa.** Las tres variantes
 
 Notebook de Kaggle: `experiments/Lab_4_p4_kaggle.ipynb` (Tesla T4, `preload=False`, 4 workers).
 
+## Fase 5 · Ejecución nocturna en Kaggle, 100 % determinista (6 nov 2026)
+
+Notebook: `experiments/Lab_4_overnight_kaggle.ipynb` (la versión exacta que se ejecutó, descargada con `kaggle kernels pull`).
+- Configuración común: Tesla T4, `torch.use_deterministic_algorithms(True)` estricto, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, cuDNN determinista sin benchmark, GAP determinista (`x.mean`), semilla 42, `NUM_WORKERS=4`, `preload=False`, AMP fp16.
+- **Prueba de determinismo superada:** dos entrenamientos iguales dan pesos idénticos (diferencia máxima 0.0; ver `search/overnight_p5/determinism_check.json`).
+- 12 experimentos en 5,4 h, todos en modo estricto, sin errores ni falta de memoria.
+
+Bases: **W09** = `p4_09_B_wide48x2` y **W07** = `p4_B_wide48x2` (48 filtros, 2 convs por bloque). Para comparar, la referencia válida es la del **mismo entorno y la misma semilla**: `n09_ref` = 0.472.
+
+| Experimento | Cambio | Media 10 últ. | Máx. (época) | Train 10 últ. | Val loss final | Params |
+|---|---|---|---|---|---|---|
+| **`n09_60ep`** | W09, 60 épocas | **0.489** | **0.5005** (48) | 0.578 | 1.160 | 2,74 M |
+| **`n07_60ep`** | W07, 60 épocas | **0.489** | **0.5024** (36) | 0.524 | **1.141** | 2,74 M |
+| `n09_crop288_eval320` | W09, recortes de 288 y evaluación a 320 | 0.483 | 0.489 | 0.535 | 1.159 | 2,74 M |
+| `n09_combo` | W09, 64×2 + 60 ép. + 288/320 | 0.482 | 0.490 | 0.561 | 1.171 | 4,82 M |
+| `n07_crop288_eval320` | W07, recortes de 288 y evaluación a 320 | 0.480 | 0.491 | 0.501 | 1.150 | 2,74 M |
+| `n07_5blocks` | W07, 5 bloques | 0.476 | 0.482 | 0.474 | 1.172 | 6,90 M |
+| `n07_64x2` | W07, 64 filtros | 0.473 | 0.479 | 0.474 | 1.177 | 4,82 M |
+| `n09_ref` | W09 tal cual (referencia) | 0.472 | 0.488 | 0.534 | 1.164 | 2,74 M |
+| `n09_64x2` | W09, 64 filtros | 0.467 | 0.479 | 0.504 | 1.211 | 4,82 M |
+| `n09_5blocks` | W09, 5 bloques | 0.462 | 0.471 | 0.492 | 1.200 | 6,90 M |
+| `n09_seed43` | W09, semilla 43 | 0.459 | 0.471 | 0.521 | 1.190 | 2,74 M |
+| `n09_seed44` | W09, semilla 44 | 0.456 | 0.466 | 0.510 | 1.203 | 2,74 M |
+
+Conclusiones:
+1. **Ruido por semilla grande:** W09 con semillas 42/43/44 → 0.472 / 0.459 / 0.456 (media 0.463, desviación ≈ 0.008). Con una sola semilla, diferencias < ~0.015 no son concluyentes. El 0.483 de W09 en Colab fue una semilla favorable.
+2. **60 épocas es lo único que mejora con claridad en las dos bases:** media de las 10 últimas 0.489 en ambas (+0.017 frente a `n09_ref` con la misma semilla) y máximos > 0.50.
+3. **Más anchura (64) o más profundidad (5 bloques) no ayuda;** la combinación tampoco supera a 60 épocas solas.
+4. **Recortes de 288 + evaluación a 320:** como mucho +0.01 respecto a la referencia, dentro del ruido.
+
+Candidato a modelo custom final: **`n07_60ep`** (máx. 0.5024; menor val loss y menor diferencia train-val que `n09_60ep`). Es reproducible exactamente con el notebook de esta fase.
+
 Archivos: `search/results_p*_m*.csv` (todas las pruebas), `search/*_epochs.csv` (F1 y loss de train/val por época), `search/p3_epochs_f1.csv` (tabla de la fase 3).

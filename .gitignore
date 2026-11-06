@@ -10,6 +10,9 @@
 # Resultados de la búsqueda de hiperparámetros (CSV pequeños, para compartirlos entre los 2 ordenadores)
 !search/
 !search/*.csv
+!search/overnight_p5/
+!search/overnight_p5/*.csv
+!search/overnight_p5/*.json
 # Notebooks auxiliares de experimentos (Kaggle, etc.)
 !experiments/
 !experiments/*.ipynb
