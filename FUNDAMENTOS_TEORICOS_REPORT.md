@@ -60,17 +60,56 @@ Formato: idea breve + referencia. Ampliar al redactar.
 * **Tamaño N**: equilibrio cobertura/presupuesto. N = 40 → cada valor ≥ ~13 veces (no depende de una prueba con suerte). Limitación: no cubre bien las **interacciones** entre hiperparámetros → de eso se encarga la Fase B (evolutiva).
   * Ajuste previsto: en la T4 caben ~15–25 pruebas si la mitad son a 320 → N = 24 (cada valor ≥ 8 veces) deja tiempo para la Fase B.
 
-## 5\. Decisiones que vienen de la teoría, no de la búsqueda
+### 4.2 Pipeline de la búsqueda profunda (ejecución real en Kaggle T4)
+
+Una única ejecución (~10 h) que encadena 4 etapas: **121 pruebas en total**.
+
+1. **Semillas (3 pruebas)**: las 3 mejores configuraciones de la búsqueda anterior en 2 máquinas (p2_09, p2_07, p2_11; ver sección 4, Fases 1–2), adaptadas al nuevo espacio. Garantizan partir al menos del mejor resultado conocido (~0.46).
+2. **Fase A — exploración (24 pruebas)**: diseño equilibrado (sección 4.1) para ver qué valor de cada hiperparámetro funciona mejor en general.
+3. **Fase B — refinamiento evolutivo (91 pruebas)**: se toman las mejores pruebas hasta el momento y se generan variantes cambiando algunos de sus hiperparámetros (mutaciones); se repite hasta agotar el tiempo de búsqueda. Explora alrededor de lo que funciona y capta interacciones.
+4. **Entrenamiento final (3 modelos)**: las 3 mejores se reentrenan desde cero con 80 épocas.
+
+* **Poda**: cada prueba tiene como máximo 16 épocas, pero en las épocas 6, 8 y 12 se detienen las que van en la mitad inferior respecto a las anteriores. Así el tiempo se concentra en las prometedoras (70 de 118 pruebas podadas). Primera poda en la época 6 (no antes) para no cortar modelos que arrancan lento.
+* **Criterio de selección**: no el mejor F1 de una sola época, sino el **máximo de la media móvil de 3 épocas** del macro-F1 de validación → evita elegir un modelo por un pico de suerte (ruido de ±0.02 entre épocas).
+* **Control de tiempo**: un modelo pesado (coste > 8× el de la red base) no se prueba; antes de cada prueba se comprueba que queda tiempo para ella y para el entrenamiento final; cada resultado se guarda al terminar.
+* **Entrenamientos finales**: se reentrena (no se continúa) con el LR coseno estirado a 80 épocas; se guarda el checkpoint de mejor val F1. Parada anticipada si a partir de la época 30 el F1 de train supera al de validación en ≥ 0.10 (overfitting). En la práctica ninguno la activó (diferencia ~0.05) → los 3 completaron 80 épocas.
+* **Resultado**: las 3 finalistas salieron de la Fase B (B_037, B_076, B_038; ~0.48 a 16 épocas) y llegaron a **0.519–0.524** de val F1 con 80 épocas. El modelo final es la de mejor criterio (F3_B_038: 48 canales base, 5 bloques, entrada 320, sin residual; 0.524).
+
+## 5\. Fine-Tuning (redes preentrenadas)
+
+* **Qué es**: redes de torchvision preentrenadas en ImageNet, con una nueva capa final `Linear` de 7 salidas; se entrena toda la red (backbone + cabeza), no solo la cabeza.
+* **Arquitecturas**: 3 familias modernas y distintas con tamaño similar (~24–28 M parámetros) para que quepan en la T4 (~20–33 s/época a 224): **ConvNeXt-Tiny** (CNN moderna; Liu et al., 2022), **Swin-T** (transformer de visión con ventanas desplazadas; Liu et al., 2021) y **EfficientNetV2-S** (CNN eficiente; Tan & Le, 2021). **ResNet-50** (He et al., 2016) como reserva.
+  * Diversidad de familias = más probabilidad de que una encaje con la tarea y útil para ensembles.
+* **Test de compatibilidad y determinismo previo a la búsqueda**: cada red entrena 1 época dos veces con la receta por defecto y los pesos deben ser idénticos bit a bit (modo determinista estricto, semilla 42) → reproducibilidad.
+  * EfficientNetV2-S falló (pérdida no finita con AMP fp16) → sustituida automáticamente por ResNet-50.
+  * Mide también s/época para el planificador de tiempo (ConvNeXt 27.9 s, ResNet-50 22.0 s, Swin-T 32.5 s).
+  * El `AdaptiveAvgPool` se cambió por un `mean()` porque su backward en CUDA no es determinista.
+* **LR discriminativo**: LR pequeño en el backbone (ya está entrenado; rangos log-uniformes por arquitectura) y LR de la cabeza × `head_mult` (1 o 10) porque arranca aleatoria (Howard & Ruder, 2018; Kornblith et al., 2019).
+* **Receta**: AdamW sin weight decay en biases, normalizaciones, layer-scale ni tablas de posición; warmup 1–2 épocas + coseno; entrada 224 (resolución del preentrenamiento); normalización ImageNet obligatoria; AMP.
+* **Regularización explorada**: stochastic depth / `drop_path` 0.1–0.3 (Huang et al., 2016), label smoothing 0/0.1, pesos por clase (ninguno / 1/√frecuencia), mixup 0/0.2, aumentos suaves/fuertes.
+* **Búsqueda**: Fase 1 = 10 configuraciones por arquitectura (la 00 con la receta estándar, 9 aleatorias con semilla determinista), 10 épocas, poda por mediana en la época 4 **solo contra trials de la misma arquitectura** (aprenden a distinta velocidad). Orden round-robin entre arquitecturas → todas tienen cobertura si se acaba el tiempo. Resultado: 30 trials, 11 podados.
+  * Fase 2 = las 2 mejores de cada arquitectura reentrenadas desde cero con 30 épocas, guardando el checkpoint de mejor época de val → 6 modelos. Modelo final = mejor F1 de val de la Fase 2. Planificador de tiempo con presupuesto de 11 h que reserva tiempo para la Fase 2.
+* **Por qué menos épocas/pruebas que en CUSTOM**: las redes preentrenadas convergen mucho antes (val F1 ~0.52–0.54 ya en 10 épocas vs ~0.46 de la custom tras 15) y cada época cuesta ~2×.
+* **Resultados (val macro-F1, Fase 2, 30 épocas)**: swin_p2_1 **0.546** (modelo final) > r50_p2_0 0.539 > swin_p2_0 0.532 > r50_p2_1 0.518 > cnx_p2_0 0.505 > cnx_p2_1 0.501.
+  * Final: Swin-T con LR 2.37e-5, `head_mult` 1, wd 0.0395, batch 32, warmup 2, sin label smoothing, pesos 1/√frecuencia, sin mixup, aumentos suaves, `drop_path` 0.2; mejor época 26 (media de las últimas 5: 0.538).
+  * Swin con LR pequeño y `head_mult` 1 fue el más estable (F1 de train 0.77 en la mejor época).
+  * ConvNeXt alcanzó su pico pronto (épocas 9–12) y no se benefició de 30 épocas.
+  * ResNet-50 (r50_p2_0) llegó a F1 de train 0.99 (sobreajuste fuerte) manteniendo 0.54 en val.
+* **Errores por clase**: peores Low (~0.17–0.33), Moderate (~0.30–0.39) y Very High (~0.29–0.43); mejores Water (~0.81–0.90) y Non-burnable (~0.79–0.83) → confusión entre niveles de riesgo vecinos (clases ordinales), coherente con Shen et al., 2023.
+* **Salvedad**: igual que en CUSTOM, la validación se usó para seleccionar → F1 optimista (en CUSTOM un val 0.52 dio test 0.47).
+
+## 6\. Decisiones que vienen de la teoría, no de la búsqueda
 
 * Inicialización Kaiming, BatchNorm, convoluciones 3×3, coseno con warmup, AdamW, normalización de entrada → fijados por la literatura, no explorados (ahorra presupuesto).
 
-## 6\. Alternativas consideradas (y por qué no)
+## 7\. Alternativas consideradas (y por qué no)
 
 * **Optimización bayesiana (TPE / procesos gaussianos)** (Bergstra et al., 2011): más eficiente, pero gana a la aleatoria solo tras \~10–20 pruebas y requiere sincronizar las 2 máquinas.
 * **LR range test** (Smith, 2017): forma objetiva y barata de fijar el rango del LR. Posible mejora.
 * **Population Based Training** (Jaderberg et al., 2017): requiere muchas pruebas en paralelo; excesivo para este presupuesto.
+* **Redes más grandes o preentrenamiento propio con el dataset completo** (fine-tuning): descartados por tiempo; se eligieron redes de ~24–28 M parámetros que caben en la T4 (~20–33 s/época).
 
-## 7\. Contexto del dataset (FireRisk)
+## 8\. Contexto del dataset (FireRisk)
 
 * Shen et al., 2023 (DICTA): con el dataset completo (\~91k imágenes), ResNet-50 / ViT / DINO / MAE logran \~61–65 % de accuracy. Los errores se concentran entre clases vecinas (riesgo ordinal) → techo realista; nuestro subconjunto es mucho menor (3516 train).
 
