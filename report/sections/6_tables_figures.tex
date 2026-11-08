@@ -1,0 +1,126 @@
+% ---------------------------------------------------------------------------------
+% PAGE 4: TABLES AND FIGURES (+ references, added in main.tex)
+% Figures: put PNG/PDF files in figures/ and replace the \fbox placeholders by
+% \includegraphics[width=\linewidth]{figures/<file>}.
+% ---------------------------------------------------------------------------------
+
+% ---- Table 1: experiments (required: category, change, objective, budget, val macro-F1) ----
+\begin{table}[H]
+\centering\scriptsize
+\caption{Main experiments (validation macro-F1). Reference and selected models in bold.}
+\label{tab:experiments}
+\begin{tabularx}{\linewidth}{@{}l l X l c@{}}
+\toprule
+Cat. & Change & Objective & Budget & Val F1 \\
+\midrule
+CUSTOM & \textbf{Reference notebook} & Baseline & \todo{} & \todo{} \\
+CUSTOM & Phases 1--2 random search & Architecture, optimiser, regularisation & 15 ep & \todo{} \\
+CUSTOM & 48 ch, 2 convs/block & More capacity (underfitting) & 40 ep & 0.496 \\
+CUSTOM & \textbf{60 epochs (n07\_60ep)} & Longer schedule & 60 ep & 0.502 \\
+CUSTOM & \todo{more rows} & & & \\
+\midrule
+FT & AlexNet (provided) & Baseline & 5 ep & \todo{} \\
+FT & \textbf{Swin-T (swin\_p2\_1)} & Selected FT & 30 ep & 0.546 \\
+FT & \todo{more rows} & & & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ---- Table 2: per-class metrics of the selected models (validation) ----
+\begin{table}[H]
+\centering\scriptsize
+\caption{Per-class validation precision / recall / F1 of the selected models.}
+\label{tab:perclass}
+\begin{tabular}{@{}l ccccccc c@{}}
+\toprule
+Model & Water & V.\,Low & Low & Mod. & High & V.\,High & Non-b. & Macro \\
+\midrule
+CUSTOM F1 & \todo{} & & & & & & & \\
+FT F1 & \todo{} & & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---- Table 3: public CodaBench submissions ----
+\begin{table}[H]
+\centering\scriptsize
+\caption{Public CodaBench scores (fixed undisclosed subset of the test set).}
+\label{tab:submissions}
+\begin{tabular}{@{}l l l c c@{}}
+\toprule
+Submission ID & Date & Models (custom / ft) & CUSTOM & FT \\
+\midrule
+1036062 & 05 Nov & p4\_09\_B / placeholder & 0.49 & -- \\
+\todo{} & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---- Figures ----
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.49\linewidth}\centering
+  \fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering\todo{CUSTOM curves}}}
+  \caption{CUSTOM}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\linewidth}\centering
+  \fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering\todo{FT curves}}}
+  \caption{FINE-TUNING}
+\end{subfigure}
+\caption{Training/validation loss and macro-F1 per epoch.}
+\label{fig:curves}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.49\linewidth}\centering
+  \fbox{\parbox[c][3.5cm][c]{0.9\linewidth}{\centering\todo{CUSTOM confusion matrix}}}
+  \caption{CUSTOM}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\linewidth}\centering
+  \fbox{\parbox[c][3.5cm][c]{0.9\linewidth}{\centering\todo{FT confusion matrix}}}
+  \caption{FINE-TUNING}
+\end{subfigure}
+\caption{Validation confusion matrices, row-normalised (\%); rows = true class, columns = predicted class.}
+\label{fig:cm}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][2.5cm][c]{0.95\linewidth}{\centering\todo{grid of misclassified validation images (true / predicted)}}}
+\caption{Representative validation errors (true $\rightarrow$ predicted).}
+\label{fig:errors}
+\end{figure}
+
+% ---- Small tables referenced from the text (move/merge as space allows) ----
+\begin{table}[H]
+\centering\scriptsize
+\begin{minipage}[t]{0.42\linewidth}\centering
+\caption{Class distribution.}\label{tab:data}
+\begin{tabular}{@{}l rr@{}}
+\toprule
+Class & Train & Val \\
+\midrule
+0 Water & 86 & \todo{} \\
+1 Very Low & 1,088 & \\
+2 Low & 535 & \\
+3 Moderate & 431 & \\
+4 High & 315 & \\
+5 Very High & 163 & \\
+6 Non-burnable & 898 & \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.55\linewidth}\centering
+\caption{Final CUSTOM architecture.}\label{tab:arch}
+\begin{tabular}{@{}l l r@{}}
+\toprule
+Stage & Layers & Output \\
+\midrule
+Input & RGB crop & $3\times224\times224$ \\
+Block 1--4 & [Conv3x3-BN-ReLU]$\times$2, MaxPool & \todo{} \\
+Head & GAP, FC 256, ReLU, Dropout 0.3, FC 7 & 7 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}

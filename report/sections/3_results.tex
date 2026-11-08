@@ -1,0 +1,17 @@
+% ---------------------------------------------------------------------------------
+% 3. RESULTS AND ERROR ANALYSIS  (~1 page of text; tables/figures go on page 4)
+% Guide: macro-F1 + per-class P/R/F1 (train / val / public CodaBench kept apart);
+% experiment table; curves + confusion matrices (rows = true class, counts or %);
+% visual error analysis; public scores with submission IDs.
+% ---------------------------------------------------------------------------------
+\section{Results and error analysis}\label{sec:results}
+
+\textbf{Evaluation metrics.} \todo{Macro-F1 over the 7 labels; per-class precision/recall/F1 (\cref{tab:perclass}); train vs val vs public.}
+
+\textbf{Experimental comparison.} \todo{Summary of \cref{tab:experiments}: reference vs selected, under similar budgets; which changes helped (width 48x2, 60 epochs) and which did not (inv weights, 64x2, 5 blocks, CutMix, 80 epochs, ensembles, train+val).}
+
+\textbf{Learning curves and confusion matrices.} \todo{\Cref{fig:curves}: train/val loss and macro-F1. \Cref{fig:cm}: validation confusion matrices, row-normalised \%, rows = true class.}
+
+\textbf{Visual error analysis.} \todo{\Cref{fig:errors}: validation images with true/predicted labels. Recurring confusions between adjacent risk levels (Low vs Very Low/Moderate). Train F1 in eval mode only 0.53 $\Rightarrow$ limited visual signal. CUSTOM vs FT trade-offs.}
+
+\textbf{Competition feedback.} \todo{Public scores and submission IDs (\cref{tab:submissions}); val-to-public gap of about 0.06 (selection on the same 1,172 validation images, noisy public subset).}

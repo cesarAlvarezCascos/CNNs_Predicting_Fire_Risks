@@ -1,0 +1,77 @@
+% =====================================================================================
+%  Lab 4 AVCV 2026/2027 - Fire-risk classification from satellite images (FireRisk)
+%  Report: 3 pages of text (sections 1-4 + contributions) + 1 page of tables, figures
+%  and references (Report Guidelines). Compile: latexmk -pdf main.tex
+%  Each section lives in sections/*.tex so both members can edit in parallel.
+% =====================================================================================
+\documentclass[10pt,a4paper]{article}
+
+% ---- page layout: compact but legible ----
+\usepackage[a4paper,top=1.8cm,bottom=1.8cm,left=1.9cm,right=1.9cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[english]{babel}
+
+% ---- content ----
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{siunitx}
+\sisetup{detect-all, group-minimum-digits=4}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[font=small,labelfont=bf,skip=3pt]{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ---- compact section headings (numbered, as required) ----
+\usepackage{titlesec}
+\titleformat{\section}{\normalsize\bfseries}{\thesection.}{0.5em}{\MakeUppercase}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+\titlespacing*{\subsection}{0pt}{4pt}{2pt}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+
+% ---- helpers ----
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}   % pending content; must be empty before delivery
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Fone}{macro-F1}
+
+% ---- title block ----
+\title{\vspace{-1.2cm}\large\textbf{Lab 4 AVCV 2026/2027: Fire-risk classification from satellite images}\\[2pt]
+       \normalsize CUSTOM and FINE-TUNING networks on the FireRisk subset\vspace{-0.3cm}}
+\author{\small Daniel Truzman (100475161) \quad César Álvarez-Cascos (100475191)
+        \quad\textbullet\quad CodaBench team \code{100475161\_100475191}\vspace{-0.4cm}}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{plain}
+
+% ===================== PAGES 1-3: TEXT =====================
+\input{sections/1_introduction}
+\input{sections/2_methodology}
+\input{sections/3_results}
+\input{sections/4_conclusions}
+\input{sections/5_contributions}
+
+% ===================== PAGE 4: TABLES, FIGURES, REFERENCES =====================
+\clearpage
+\input{sections/6_tables_figures}
+
+{\footnotesize
+\bibliographystyle{unsrtnat}
+\setlength{\bibsep}{0pt}
+\bibliography{references}}
+
+\end{document}

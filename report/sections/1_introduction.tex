@@ -1,0 +1,12 @@
+% ---------------------------------------------------------------------------------
+% 1. INTRODUCTION  (~1/3 page)
+% Guide: context and objective; dataset (5,861 images 320x320, 3,516/1,172/1,173,
+% class distribution, original vs input size); scope of the work.
+% ---------------------------------------------------------------------------------
+\section{Introduction}\label{sec:intro}
+
+\textbf{Context and objective.} \todo{Task: predict one of 7 FireRisk classes from an RGB satellite image (image classification, not fire detection or forecasting). Motivation. Main challenges: class imbalance and visually similar, ordinal risk levels (Low/Moderate/High).}
+
+\textbf{Dataset.} \todo{FireRisk subset \citep{shen2023firerisk}: 5,861 RGB images of $320\times320$ px; 3,516 train / 1,172 val / 1,173 test (hidden labels). Stratified split: train counts 86/1,088/535/431/315/163/898 (Water, Very Low, Low, Moderate, High, Very High, Non-burnable), see \cref{tab:data}. Network input: $224\times224$ crops (state any model at 320).}
+
+\textbf{Scope.} \todo{CUSTOM: VGG-style CNN from scratch, staged hyperparameter search. FINE-TUNING: ImageNet-pretrained torchvision models (ConvNeXt-T, Swin-T, ResNet-50). Main questions investigated (width/depth, epochs, class weights, augmentation, CutMix, ensembles, train+val).}

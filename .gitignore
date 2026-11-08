@@ -41,3 +41,16 @@ Slides/
 
 # Checkpoints de Jupyter
 .ipynb_checkpoints/
+
+# Report (LaTeX): fuentes, figuras y el PDF compilado (al final para ganar a "*.pdf")
+!report/
+!report/sections/
+!report/figures/
+!report/*.tex
+!report/*.bib
+!report/README.md
+!report/main.pdf
+!report/sections/*.tex
+!report/figures/*.png
+!report/figures/*.pdf
+!report/figures/.gitkeep
