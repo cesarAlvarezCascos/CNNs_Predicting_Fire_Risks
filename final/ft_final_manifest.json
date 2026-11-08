@@ -1,0 +1,39 @@
+{
+ "model": "FINE-TUNING - ImageNet-pretrained torchvision swin_t",
+ "weights": "Swin_T_Weights.IMAGENET1K_V1",
+ "cfg": {
+  "arch": "swin_t",
+  "lr": 2.37e-05,
+  "head_mult": 1,
+  "weight_decay": 0.0395,
+  "batch_size": 32,
+  "warmup_epochs": 2,
+  "label_smoothing": 0.0,
+  "class_weights": "sqrt_inv",
+  "mixup_alpha": 0.0,
+  "aug": "light",
+  "drop_path": 0.2,
+  "trial_id": "swin_p2_1",
+  "parent": "swin_p1_01"
+ },
+ "trial_id": "swin_p2_1",
+ "val_macro_f1_fp32": 0.545655,
+ "best_epoch": 26,
+ "epochs": 30,
+ "seed": 42,
+ "input": "224 crop (random train / centre val+test), ImageNet mean/std",
+ "checkpoint_sha256": "761fc21d43e443ca4799039e385802b7f2e8fa1a4dc7a0117eebacd408d123ac",
+ "output_ft_sha256": "cca3a8969bb9fe3659a175352af38a3bce5692b8e50ec54a6f9cb7b7497bed0f",
+ "torch": "2.11.0+cu130",
+ "torchvision": "0.26.0+cu130",
+ "gpu": "Tesla T4",
+ "test_pred_counts": [
+  26,
+  371,
+  146,
+  166,
+  80,
+  72,
+  312
+ ]
+}
