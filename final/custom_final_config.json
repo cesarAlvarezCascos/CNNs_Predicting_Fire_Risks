@@ -1,5 +1,5 @@
 {
-  "selected": null,
+  "selected": "n07_60ep",
   "candidates": {
     "p4_09_B_wide48x2": {
       "arch": {
@@ -62,7 +62,7 @@
         "hidden": 256,
         "dropout": 0.3,
         "train_crop": 224,
-        "eval_size": 224
+        "eval_size": 320
       },
       "train": {
         "optimizer": "adamw",
@@ -93,7 +93,7 @@
         "codabench": null
       },
       "reproduce": {
-        "mode": "retrain",
+        "mode": "checkpoint",
         "checkpoint": "outputs/deep_search/n07_60ep.pt",
         "submitted_csv_sha256": null
       }

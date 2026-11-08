@@ -1,0 +1,175 @@
+{
+  "selected": "swin_p2_1",
+  "candidates": {
+    "swin_p2_1": {
+      "arch": {
+        "arch": "swin_t",
+        "drop_path": 0.2,
+        "eval_size": 320
+      },
+      "train": {
+        "lr": 2.37e-05,
+        "head_mult": 1,
+        "weight_decay": 0.0395,
+        "batch_size": 32,
+        "warmup_epochs": 2,
+        "label_smoothing": 0.0,
+        "class_weights": "sqrt_inv",
+        "mixup_alpha": 0.0,
+        "aug": "light",
+        "optimizer": "adamw",
+        "epochs": 30,
+        "seed": 42
+      },
+      "runtime": {
+        "num_workers": 4,
+        "strict_determinism": true,
+        "preload": false,
+        "amp": true,
+        "gpu": "Tesla T4",
+        "torch": "2.11.0+cu130",
+        "torchvision": "0.26.0+cu130",
+        "cuda": "13.0"
+      },
+      "provenance": {
+        "found_in": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/ft_results.csv; ft_per_class_f1.csv; FineTuning_Output/final_ft/ft_final_manifest.json",
+        "notebook": "Lab_4_FINE_TUNING.ipynb (branch FINE_TUNING), executed on Kaggle",
+        "parent": "swin_p1_01",
+        "val_macro_f1_best": 0.545655,
+        "val_macro_f1_amp_log": 0.5457,
+        "best_epoch": 26,
+        "codabench": null
+      },
+      "reproduce": {
+        "mode": "checkpoint",
+        "checkpoint": "FineTuning_Output/final_ft/ft_final_swin_p2_1.pt",
+        "checkpoint_sha256": "761fc21d43e443ca4799039e385802b7f2e8fa1a4dc7a0117eebacd408d123ac",
+        "submitted_csv_sha256": "cca3a8969bb9fe3659a175352af38a3bce5692b8e50ec54a6f9cb7b7497bed0f"
+      }
+    },
+    "r50_p2_0": {
+      "arch": {
+        "arch": "resnet50",
+        "drop_path": 0.2
+      },
+      "train": {
+        "lr": 0.000448,
+        "head_mult": 10,
+        "weight_decay": 0.0287,
+        "batch_size": 64,
+        "warmup_epochs": 1,
+        "label_smoothing": 0.1,
+        "class_weights": "none",
+        "mixup_alpha": 0.0,
+        "aug": "strong",
+        "optimizer": "adamw",
+        "epochs": 30,
+        "seed": 42
+      },
+      "runtime": {
+        "num_workers": 4,
+        "strict_determinism": true,
+        "preload": false,
+        "amp": true,
+        "gpu": "Tesla T4",
+        "torch": "2.11.0+cu130",
+        "torchvision": "0.26.0+cu130",
+        "cuda": "13.0"
+      },
+      "provenance": {
+        "found_in": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/ft_results.csv; ft_per_class_f1.csv",
+        "notebook": "Lab_4_FINE_TUNING.ipynb (branch FINE_TUNING), executed on Kaggle",
+        "parent": "r50_p1_06",
+        "val_macro_f1_best": 0.5406509051438552,
+        "val_macro_f1_amp_log": 0.5394,
+        "best_epoch": 25,
+        "codabench": null
+      },
+      "reproduce": {
+        "mode": "checkpoint",
+        "checkpoint": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/r50_p2_0.pt",
+        "checkpoint_sha256": "4d9919557ffb1b0b77eaa80ca5ddfdce6a789b8858a3afbbe182459189d70220",
+        "submitted_csv_sha256": null
+      }
+    },
+    "swin_p2_0": {
+      "arch": {
+        "arch": "swin_t",
+        "drop_path": 0.1
+      },
+      "train": {
+        "lr": 0.000122,
+        "head_mult": 10,
+        "weight_decay": 0.0494,
+        "batch_size": 64,
+        "warmup_epochs": 1,
+        "label_smoothing": 0.1,
+        "class_weights": "sqrt_inv",
+        "mixup_alpha": 0.2,
+        "aug": "light",
+        "optimizer": "adamw",
+        "epochs": 30,
+        "seed": 42
+      },
+      "runtime": {
+        "num_workers": 4,
+        "strict_determinism": true,
+        "preload": false,
+        "amp": true,
+        "gpu": "Tesla T4",
+        "torch": "2.11.0+cu130",
+        "torchvision": "0.26.0+cu130",
+        "cuda": "13.0"
+      },
+      "provenance": {
+        "found_in": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/ft_results.csv; ft_per_class_f1.csv",
+        "notebook": "Lab_4_FINE_TUNING.ipynb (branch FINE_TUNING), executed on Kaggle",
+        "parent": "swin_p1_06",
+        "val_macro_f1_best": 0.5323464348323473,
+        "val_macro_f1_amp_log": 0.5323,
+        "best_epoch": 27,
+        "codabench": null
+      },
+      "reproduce": {
+        "mode": "checkpoint",
+        "checkpoint": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/swin_p2_0.pt",
+        "checkpoint_sha256": "528a20a3ebe3fe6cb7e09e174c89fb6992f092f487f11921da429588b11097dd",
+        "submitted_csv_sha256": null
+      }
+    },
+    "ft_ensemble_3": {
+      "arch": null,
+      "train": null,
+      "runtime": {
+        "num_workers": 4,
+        "strict_determinism": true,
+        "preload": false,
+        "amp": true,
+        "gpu": "Tesla T4",
+        "torch": "2.11.0+cu130",
+        "torchvision": "0.26.0+cu130",
+        "cuda": "13.0"
+      },
+      "members": [
+        "swin_p2_0",
+        "r50_p2_0",
+        "swin_p2_1"
+      ],
+      "provenance": {
+        "found_in": "ft_branch.ipynb cell 20 (mean of the member probabilities, output_ft_ensemble.csv); members: ft_results.csv",
+        "notebook": "Lab_4_FINE_TUNING.ipynb (branch FINE_TUNING), cell 20",
+        "parent": null,
+        "val_macro_f1_best": null,
+        "val_macro_f1_amp_log": null,
+        "best_epoch": null,
+        "codabench": null
+      },
+      "reproduce": {
+        "mode": "checkpoint",
+        "checkpoint": null,
+        "checkpoint_sha256": null,
+        "submitted_csv_sha256": null
+      }
+    }
+  }
+}
