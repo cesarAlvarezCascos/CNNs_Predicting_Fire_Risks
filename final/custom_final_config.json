@@ -1,0 +1,102 @@
+{
+  "selected": null,
+  "candidates": {
+    "p4_09_B_wide48x2": {
+      "arch": {
+        "base_channels": 48,
+        "n_blocks": 4,
+        "convs_per_block": 2,
+        "kernel_size": 3,
+        "head": "gap",
+        "hidden": 256,
+        "dropout": 0.0,
+        "train_crop": 224,
+        "eval_size": 224
+      },
+      "train": {
+        "optimizer": "adamw",
+        "lr": 0.000517,
+        "weight_decay": 0.0753,
+        "batch_size": 128,
+        "warmup_epochs": 1,
+        "label_smoothing": 0.0,
+        "class_weights": "sqrt_inv",
+        "mixup_alpha": 0.0,
+        "aug": "light",
+        "epochs": 40,
+        "seed": 42
+      },
+      "runtime": {
+        "num_workers": 0,
+        "strict_determinism": false,
+        "pool_impl": "adaptive",
+        "preload": true,
+        "amp": true,
+        "gpu": "Tesla T4"
+      },
+      "provenance": {
+        "found_in": "final/custom_final_manifest.json; SUBMISSIONS.md",
+        "notebook": "experiments/Lab_4_AVCV_before_cleanup.ipynb (phase 4, Colab)",
+        "val_macro_f1_best": 0.4955906013739747,
+        "best_epoch": 36,
+        "codabench": {
+          "submission_id": 1036062,
+          "date": "2026-11-05 19:36",
+          "public_macro_f1_custom": 0.49,
+          "status": "reported in SUBMISSIONS.md, pending confirmation"
+        }
+      },
+      "reproduce": {
+        "mode": "checkpoint",
+        "checkpoint": "outputs/deep_search/p4_09_B_wide48x2.pt",
+        "submitted_csv_sha256": "b706a460d879f4c0f4c7eff7057becc46c3d95876e640bca7b7e5986a1affeb4"
+      }
+    },
+    "n07_60ep": {
+      "arch": {
+        "base_channels": 48,
+        "n_blocks": 4,
+        "convs_per_block": 2,
+        "kernel_size": 3,
+        "head": "gap",
+        "hidden": 256,
+        "dropout": 0.3,
+        "train_crop": 224,
+        "eval_size": 224
+      },
+      "train": {
+        "optimizer": "adamw",
+        "lr": 0.000317,
+        "weight_decay": 0.0464,
+        "batch_size": 128,
+        "warmup_epochs": 1,
+        "label_smoothing": 0.0,
+        "class_weights": "sqrt_inv",
+        "mixup_alpha": 0.0,
+        "aug": "strong",
+        "epochs": 60,
+        "seed": 42
+      },
+      "runtime": {
+        "num_workers": 4,
+        "strict_determinism": true,
+        "pool_impl": "mean",
+        "preload": false,
+        "amp": true,
+        "gpu": "Tesla T4"
+      },
+      "provenance": {
+        "found_in": "search/results_p5_m1.csv; SUBMISSIONS.md",
+        "notebook": "experiments/Lab_4_overnight_kaggle.ipynb (phase 5, Kaggle)",
+        "val_macro_f1_best": 0.5024082209646386,
+        "best_epoch": 36,
+        "codabench": null
+      },
+      "reproduce": {
+        "mode": "retrain",
+        "checkpoint": "outputs/deep_search/n07_60ep.pt",
+        "submitted_csv_sha256": null
+      }
+    }
+  }
+}
