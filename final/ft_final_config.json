@@ -38,13 +38,17 @@
         "val_macro_f1_best": 0.545655,
         "val_macro_f1_amp_log": 0.5457,
         "best_epoch": 26,
-        "codabench": null
+        "codabench": {
+          "date": "2026-11-08",
+          "public_macro_f1_ft": 0.49,
+          "eval_size": 320
+        }
       },
       "reproduce": {
         "mode": "checkpoint",
-        "checkpoint": "FineTuning_Output/final_ft/ft_final_swin_p2_1.pt",
+        "checkpoint": "outputs/Lab_4_OUT/ft/swin_p2_1.pt",
         "checkpoint_sha256": "761fc21d43e443ca4799039e385802b7f2e8fa1a4dc7a0117eebacd408d123ac",
-        "submitted_csv_sha256": "cca3a8969bb9fe3659a175352af38a3bce5692b8e50ec54a6f9cb7b7497bed0f"
+        "submitted_csv_sha256": "9055d95d0fd61035ae8a6a07d7283a62eb5261a74c25b8258a8d8401197c12f7"
       }
     },
     "r50_p2_0": {
@@ -87,7 +91,7 @@
       },
       "reproduce": {
         "mode": "checkpoint",
-        "checkpoint": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/r50_p2_0.pt",
+        "checkpoint": "outputs/Lab_4_OUT/ft/r50_p2_0.pt",
         "checkpoint_sha256": "4d9919557ffb1b0b77eaa80ca5ddfdce6a789b8858a3afbbe182459189d70220",
         "submitted_csv_sha256": null
       }
@@ -132,7 +136,7 @@
       },
       "reproduce": {
         "mode": "checkpoint",
-        "checkpoint": "FineTuning_Output/outputs/Lab_4_2026_2027/ft/swin_p2_0.pt",
+        "checkpoint": "outputs/Lab_4_OUT/ft/swin_p2_0.pt",
         "checkpoint_sha256": "528a20a3ebe3fe6cb7e09e174c89fb6992f092f487f11921da429588b11097dd",
         "submitted_csv_sha256": null
       }

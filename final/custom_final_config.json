@@ -40,9 +40,8 @@
         "val_macro_f1_best": 0.4955906013739747,
         "best_epoch": 36,
         "codabench": {
-          "submission_id": 1036062,
           "date": "2026-11-05 19:36",
-          "public_macro_f1_custom": 0.49,
+          "public_macro_f1_custom": 0.5,
           "status": "reported in SUBMISSIONS.md, pending confirmation"
         }
       },
@@ -90,12 +89,16 @@
         "notebook": "experiments/Lab_4_overnight_kaggle.ipynb (phase 5, Kaggle)",
         "val_macro_f1_best": 0.5024082209646386,
         "best_epoch": 36,
-        "codabench": null
+        "codabench": {
+          "date": "2026-11-08",
+          "public_macro_f1_custom": 0.5,
+          "eval_size": 320
+        }
       },
       "reproduce": {
         "mode": "checkpoint",
         "checkpoint": "outputs/deep_search/n07_60ep.pt",
-        "submitted_csv_sha256": null
+        "submitted_csv_sha256": "c6288bf17d74dd876a022d371f719b77ece43f1d6798826dab1a4ee14c48b3cf"
       }
     }
   }
