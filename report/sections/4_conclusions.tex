@@ -1,30 +1,13 @@
 % ---------------------------------------------------------------------------------
-% 4. CONCLUSIONS  (~1/4 page)
-% Guide: changes with the largest supported effect on each model; scratch vs
-% fine-tuning; difficulties, limitations, realistic next steps.
+% 4. CONCLUSIONS
+% Guide: largest supported effects; scratch vs fine-tuning; difficulties, limitations,
+% realistic next steps.
 % ---------------------------------------------------------------------------------
 \section{Conclusions}\label{sec:conclusions}
 
-For the CUSTOM network, the changes with the clearest support were replacing the
-Flatten head with global average pooling, widening to 48 channels with two
-convolutions per block ($+0.03$ macro-F1) and a 60-epoch cosine schedule, which
-reached 0.502 on validation. Inverse-frequency class weights, further width or
-depth, larger crops, CutMix, 80 epochs, ensembles, per-class bias tuning and
-retraining on train+val (0.494 public) brought no reliable gain. For FT,
-ImageNet pretraining itself was decisive: it reaches 0.52--0.54 validation
-macro-F1 in about 10 epochs, against 0.46 for the scratch model after 15, and
-the best Swin-T (0.546) used a small backbone learning rate
-($2.37\times10^{-5}$) with an unscaled head. However, the public scores are
-close (0.49 CUSTOM, 0.48 FT), so the gap between categories largely vanishes on
-the public subset.
-
-Every model loses about 0.06 from validation to public. We attribute this to
-selection bias from reusing the same 1,172 validation images, a noisy public
-subset, and ambiguous ordinal intermediate classes: even on its training set the
-CUSTOM model only reaches 0.53 macro-F1 in eval mode, with Low at roughly
-0.2--0.3, which suggests limited visual signal at this resolution. The original
-FireRisk benchmark reports only $\sim$61--65\% accuracy using the full
-$\sim$91k images \citep{shen2023firerisk}. Realistic next steps are stratified
-$k$-fold over train+val with fold ensembling for honest validation,
-ordinal-aware losses, remote-sensing pretraining and higher input resolution
-for FT.
+\begin{itemize}
+  \item \textbf{Largest effects.} CUSTOM: GAP head, more width and a longer schedule (0.44 $\to$ 0.50). FT: the ImageNet pretraining itself, with a small backbone learning rate (0.546 in 30 epochs).
+  \item \textbf{Scratch vs fine-tuning.} FT is clearly better on validation, but both score about the same on the public subset (0.49 vs 0.48).
+  \item \textbf{Main limitation.} The intermediate classes are hard even on training images, and reusing one validation set for selection inflates its scores ($\sim$0.06). The original FireRisk paper reports only 61--65\% accuracy with $\sim$91k images \citep{shen2023firerisk}.
+  \item \textbf{Next steps.} $k$-fold cross-validation for honest selection, losses that use the class order, remote-sensing pretraining and higher input resolution.
+\end{itemize}

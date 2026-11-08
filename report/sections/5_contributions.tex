@@ -1,14 +1,8 @@
 % ---------------------------------------------------------------------------------
-% INDIVIDUAL CONTRIBUTIONS (required by the guide; still part of the 3 text pages)
+% INDIVIDUAL CONTRIBUTIONS (required by the guide; part of the 3 text pages)
 % ---------------------------------------------------------------------------------
 \paragraph{Individual contributions.}
-\textbf{Daniel Truzman (100475161):} GPU data pipeline and augmentation with AMP
-optimisation, notebook cleanup, phases 3--4 of the CUSTOM search on Colab and
-Kaggle (48-channel, two-conv widening; class-weight tests), phase 5 (12
-strictly deterministic Kaggle runs, 60 epochs, selecting \texttt{n07\_60ep}),
-determinism setup, CutMix, ensemble, bias-tuning and train+val experiments, and
-the CodaBench submissions. \todo{confirm (GPU pipeline/AMP: git log shows a ``GPU Performance'' commit by César)}
-\textbf{César Álvarez-Cascos (100475191):} Parts 1--2 of the notebook (dataset
-and transforms), the two-machine random-search infrastructure (phases 1--2), the
-deep hyperparameter search (121 trials) and the fine-tuning search over
-ConvNeXt-T, Swin-T and ResNet-50, which selected Swin-T. \todo{confirm}
+\begin{itemize}
+  \item \textbf{Daniel Truzman (100475161):} CUSTOM phases 3--5 (widening to 48$\times$2, 60 epochs, selection of n07\_60ep), deterministic Kaggle setup, CutMix / ensemble / threshold / train+val experiments, notebook cleanup and submissions. \todo{confirm; GPU pipeline/AMP: Dani or César?}
+  \item \textbf{César Álvarez-Cascos (100475191):} notebook Parts 1--2 (dataset, transforms), two-machine random search (phases 1--2), 121-trial deep search and the fine-tuning search (Swin-T). \todo{confirm}
+\end{itemize}

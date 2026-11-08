@@ -1,12 +1,21 @@
 % ---------------------------------------------------------------------------------
-% 1. INTRODUCTION  (~1/3 page)
+% 1. INTRODUCTION
 % Guide: context and objective; dataset (5,861 images 320x320, 3,516/1,172/1,173,
 % class distribution, original vs input size); scope of the work.
 % ---------------------------------------------------------------------------------
 \section{Introduction}\label{sec:intro}
 
-\textbf{Context and objective.} Mapping wildfire risk over large areas from satellite imagery can support the planning of prevention efforts. We address it as \emph{image classification}: given one RGB satellite image, predict one of the seven FireRisk classes (Water, Very Low, Low, Moderate, High, Very High, Non-burnable). The task is neither fire detection nor temporal forecasting: the label describes the risk of the area, not the presence of fire. Two properties make it hard: strong class imbalance, and risk levels that are ordinal and visually similar, so that neighbouring classes (e.g.\ Low/Moderate/High) are easily confused.
+\textbf{Task.} Given one RGB satellite image, predict one of seven FireRisk classes: Water, Very Low, Low, Moderate, High, Very High and Non-burnable. This is \emph{image classification}: the label describes the risk of the area, not the presence of fire. Two properties make it hard:
+\begin{itemize}
+  \item \textbf{Class imbalance:} Water is 2.4\% of the images, Very Low 31\%.
+  \item \textbf{Ordinal, similar classes:} neighbouring risk levels (Low / Moderate / High) look alike.
+\end{itemize}
 
-\textbf{Dataset.} We use a subset of FireRisk \citep{shen2023firerisk} with 5,861 RGB images of $320\times320$ pixels, split in a stratified way into 3,516 training, 1,172 validation and 1,173 test images (test labels are hidden). The training set contains 86 Water, 1,088 Very Low, 535 Low, 431 Moderate, 315 High, 163 Very High and 898 Non-burnable images (\cref{tab:data}); validation has the same proportions, so the rarest class (Water, 2.4\%) is 13 times less frequent than the most common one (Very Low, 31\%). The original images are $320\times320$, whereas both final networks receive $224\times224$ crops.
+\textbf{Dataset.} A FireRisk subset \citep{shen2023firerisk}: 5,861 images of $320\times320$ px, split (stratified) into 3,516 train, 1,172 validation and 1,173 test images with hidden labels (\cref{tab:data}). Both final networks take $224\times224$ crops as input.
 
-\textbf{Scope.} We develop two systems: CUSTOM, a VGG-style CNN trained from scratch and selected through a staged random hyperparameter search, and FINE-TUNING, which adapts ImageNet-pretrained torchvision models (ConvNeXt-T, Swin-T, ResNet-50), with Swin-T selected. The main questions studied are network width and depth, number of epochs, class weighting, augmentation and image mixing, ensembles, and retraining on train+val.
+\textbf{Scope.} We built two systems:
+\begin{itemize}
+  \item \textbf{CUSTOM:} a VGG-style CNN trained from scratch, tuned with a staged random search.
+  \item \textbf{FINE-TUNING (FT):} ImageNet-pretrained torchvision models; Swin-T was selected.
+\end{itemize}
+We studied width and depth, training length, class weighting, augmentation and mixing, ensembles and retraining on train+val.

@@ -1,35 +1,72 @@
 % ---------------------------------------------------------------------------------
-% 2. METHODOLOGY  (~1.3 pages)
+% 2. METHODOLOGY
 % ---------------------------------------------------------------------------------
 \section{Methodology}\label{sec:method}
 
-% 2.1 Guide: pipeline (resize/crop, tensor, normalisation, train augmentation; what is
-% used for val/test) + justification with validation evidence (also what did NOT help).
+% 2.1 Guide: pipeline + justification with validation evidence (also what did NOT help).
 \subsection{Preprocessing and data augmentation}\label{sec:prep}
-\textbf{Pipeline.} Images are read as float tensors in $[0,1]$. For training, a random $224\times224$ crop is taken from the $320\times320$ image on the CPU; validation and test images use a deterministic $224\times224$ centre crop. All images are normalised with the ImageNet mean and standard deviation, which the pretrained weights require and which we keep for CUSTOM for a common pipeline. Training batches are then augmented on the GPU with random horizontal and vertical flips, random $90^\circ$ rotations and random gamma, brightness, contrast and saturation changes, with two presets: \emph{light} (0.1/0.05/0.05/0.05) and \emph{strong} (0.2/0.15/0.15/0.15). Validation and test receive no augmentation and no test-time augmentation (TTA).
+\textbf{Pipeline.} Images are read as floats in $[0,1]$ and normalised with the ImageNet mean and standard deviation (required by the pretrained weights; kept for CUSTOM so both share one pipeline).
+\begin{itemize}
+  \item \textbf{Train:} random $224\times224$ crop of the $320\times320$ image, then GPU batch augmentation: horizontal/vertical flips, $90^\circ$ rotations and random gamma, brightness, contrast and saturation (\emph{light} or \emph{strong} preset).
+  \item \textbf{Validation and test:} centre $224\times224$ crop, no augmentation, no test-time augmentation (TTA).
+\end{itemize}
 
-\textbf{Justification.} Satellite images have no canonical orientation, so flips and $90^\circ$ rotations create new samples without changing the label, while colour changes are kept mild to preserve vegetation cues. Random crops add translation variety and reduce the input cost. The random search selected \emph{strong} for the best CUSTOM model, while the selected Swin-T uses \emph{light}. Other options were tested on validation and discarded: mixup \citep{zhang2018mixup} ($\alpha$ 0.2/0.4) was not kept; CutMix \citep{yun2019cutmix}, standard or mixing only the five risk classes, gave a last-10-epoch mean val F1 of 0.483 and 0.470 versus 0.486 without it; TTA with 8 flips/rotations lowered val F1 by about 0.006; and training at 288 while evaluating on the full $320$ image gained at most $+0.01$, within seed noise ($\pm0.008$).
+\textbf{Why.} Satellite images have no canonical orientation, so flips and rotations add samples without changing the label; colour changes stay mild to keep vegetation cues. The search chose \emph{strong} for CUSTOM and \emph{light} for Swin-T. Mixup \citep{zhang2018mixup}, CutMix \citep{yun2019cutmix}, TTA and evaluating at 320 px gave no gain beyond seed noise ($\pm0.008$; \cref{tab:experiments}).
 
-% 2.2 Guide: complete architecture (blocks, channels, kernels, pooling, regularisation,
-% 7-output classifier), primitive layers only; design decisions vs reference config.
+% 2.2 Guide: complete architecture, primitive layers only; design decisions vs reference.
 \subsection{System design: CUSTOM network}\label{sec:custom}
-\textbf{Architecture.} The CUSTOM network (\cref{tab:arch}) is a VGG-style stack \citep{simonyan2015vgg} built only from primitive layers. Each of its four blocks applies twice the sequence Conv $3\times3$ (stride 1, padding 1)--BatchNorm \citep{ioffe2015batchnorm}--ReLU and ends with $2\times2$ max-pooling, so the channel width grows as 48--96--192--384 while the $224\times224$ input shrinks to a $14\times14$ map. Global average pooling (GAP) \citep{lin2014nin}, computed as a spatial mean, yields a 384-dimensional descriptor, and the classifier FC(384,256)--ReLU--Dropout(0.3)--FC(256,7) returns seven raw logits (the softmax is part of the loss). Weights use Kaiming initialisation; the model has 2{,}739{,}447 parameters.
+\textbf{Architecture} (\cref{tab:arch}). Four VGG-style blocks \citep{simonyan2015vgg}, each [Conv $3\times3$ -- BatchNorm \citep{ioffe2015batchnorm} -- ReLU]$\times2$ + MaxPool $2\times2$, with 48--96--192--384 channels. Global average pooling (GAP) \citep{lin2014nin} feeds FC(384,256) -- ReLU -- Dropout(0.3) -- FC(256,7). Only primitive layers are used; 2.74\,M parameters.
 
-\textbf{Design decisions.} The provided reference has three blocks of a single unpadded $5\times5$ convolution (6--16--32 channels), no normalisation, a Flatten head and SGD with StepLR. Each change below was kept only if it raised validation macro-F1. (i) GAP replaces Flatten: with Flatten the first FC layer held about 99\% of the parameters, and Flatten heads scored below GAP heads in the first search phase. (ii) Two stacked $3\times3$ convolutions see a $5\times5$ field with fewer weights and one more non-linearity \citep{simonyan2015vgg}, and BatchNorm stabilises training from scratch. (iii) Widening to 48 base channels with two convolutions per block added about $+0.03$ macro-F1, whereas 64 base channels, a fifth block or larger crops gave no gain beyond seed noise (\cref{tab:experiments}). (iv) The mean replaces \code{AdaptiveAvgPool2d}, whose CUDA backward pass is not deterministic (\cref{sec:protocol}). Regularisation combines dropout in the head, decoupled weight decay and data augmentation (\cref{sec:prep}).
+\textbf{Changes from the reference} (three blocks of one $5\times5$ conv with 6--16--32 channels, no normalisation, Flatten head), each kept only if it raised validation macro-F1:
+\begin{itemize}
+  \item \textbf{GAP instead of Flatten:} the Flatten FC layer held $\sim$99\% of the parameters and scored lower.
+  \item \textbf{Two $3\times3$ convs + BatchNorm per block:} same receptive field as $5\times5$, fewer weights, stabler training.
+  \item \textbf{Wider (48 base channels):} $+0.03$. Going further (64 channels, 5 blocks, bigger crops) did not help.
+  \item \textbf{GAP as a plain mean:} \code{AdaptiveAvgPool2d} has a non-deterministic CUDA backward.
+\end{itemize}
 
-% 2.3 Guide: architecture, source of weights, pretraining dataset, new 7-output layer,
-% frozen/updated layers, preprocessing matching the weights, per-group learning rates.
+% 2.3 Guide: architecture, weights, pretraining dataset, new 7-output layer, frozen/updated
+% layers, preprocessing matching the weights, per-group learning rates.
 \subsection{System design: FINE-TUNING network}\label{sec:ft}
-\textbf{Pretrained model.} Instead of the provided AlexNet baseline \citep{krizhevsky2012alexnet}, we compared three modern backbones of similar size (24--28\,M parameters) from different families, all with torchvision ImageNet-1k weights \citep{russakovsky2015imagenet}: ConvNeXt-Tiny \citep{liu2022convnext} (\code{IMAGENET1K\_V1}), EfficientNetV2-S \citep{tan2021efficientnetv2} (\code{IMAGENET1K\_V1}) and Swin-T \citep{liu2021swin} (\code{Swin\_T\_Weights.IMAGENET1K\_V1}). EfficientNetV2-S failed our compatibility test (non-finite loss under fp16 mixed precision) and was replaced by the reserve ResNet-50 \citep{he2016resnet} (\code{IMAGENET1K\_V2}). In every model the final layer was replaced by a freshly initialised \code{Linear(in\_features, 7)} (768$\rightarrow$7 for Swin-T), every \code{AdaptiveAvgPool2d(1)} was replaced by an equivalent mean over $H,W$ to obtain a deterministic CUDA backward pass, and the stochastic-depth rate \citep{huang2016stochasticdepth} was reset to the sampled value.
+\textbf{Pretrained model.} Instead of the provided AlexNet \citep{krizhevsky2012alexnet} we compared three modern backbones (24--28\,M parameters) with torchvision ImageNet-1k weights \citep{russakovsky2015imagenet}: ConvNeXt-T \citep{liu2022convnext}, Swin-T \citep{liu2021swin} and EfficientNetV2-S \citep{tan2021efficientnetv2}. EfficientNetV2-S failed (non-finite loss in fp16) and was replaced by ResNet-50 \citep{he2016resnet}. In every model the classifier was replaced by a new \code{Linear(in, 7)} (768$\to$7 for Swin-T) and adaptive pooling by a deterministic mean.
 
-\textbf{Adaptation strategy.} No layers were frozen: backbone and head were fine-tuned jointly. Inputs were resized to the pretraining resolution ($224\times224$) and normalised with the ImageNet mean and standard deviation. The optimiser \citep{loshchilov2019adamw} used two parameter groups: the backbone learning rate (log-uniform search over $[2\cdot10^{-5}, 3\cdot10^{-4}]$ for ConvNeXt/Swin and $[5\cdot10^{-5}, 8\cdot10^{-4}]$ for ResNet) and a head rate multiplied by \code{head\_mult}$\in\{1,10\}$, in the spirit of discriminative fine-tuning \citep{howard2018ulmfit}; biases, normalisation layers, layer-scale parameters and relative-position tables were excluded from weight decay. The selected configuration, Swin-T with backbone rate $2.37\cdot10^{-5}$, \code{head\_mult}$=1$ and drop path 0.2, reached the highest validation macro-F1 (0.546 at epoch 26/30; 0.538 averaged over the last five epochs), ahead of the best ResNet-50 (0.539) and ConvNeXt-T (0.505) runs (\cref{tab:experiments}). It was also the most stable: its training F1 was 0.77, whereas the ResNet-50 run reached 0.99, a sign of strong overfitting.
+\textbf{Adaptation.}
+\begin{itemize}
+  \item \textbf{No frozen layers:} backbone and head are trained together.
+  \item \textbf{Matching preprocessing:} $224\times224$ input and ImageNet normalisation, as in pretraining.
+  \item \textbf{Two learning rates} \citep{howard2018ulmfit}: a small one for the backbone and the head rate $\times$1 or $\times$10; no weight decay on biases and norms; stochastic depth \citep{huang2016stochasticdepth}.
+\end{itemize}
+\textbf{Selected: Swin-T} (backbone LR $2.37\cdot10^{-5}$, head $\times1$, drop path 0.2): best validation macro-F1 (0.546) and the most stable run (train F1 0.77, vs 0.99 for ResNet-50).
 
-% 2.4 Guide: loss + class weights, optimiser, LR + schedule, batch, epochs, seed,
-% environment, data subsampling; checkpoint selection by val macro-F1, early stopping
-% (yes/no), reproducibility.
+% 2.4 Guide: loss, optimiser, LR, schedule, batch, epochs, seed, environment, subsampling;
+% checkpoint selection, early stopping, reproducibility.
 \subsection{Training protocol and model selection}\label{sec:protocol}
-\textbf{Configuration.} Both models minimise cross-entropy with class weights $w_c \propto 1/\sqrt{n_c}$ (mean 1), without label smoothing or mixup \citep{zhang2018mixup}. Both use AdamW \citep{loshchilov2019adamw}, a linear warm-up followed by a per-epoch cosine decay to zero \citep{loshchilov2017sgdr}, and fp16 mixed precision. CUSTOM: learning rate $3.17\times10^{-4}$, weight decay 0.0464, batch 128, 1 warm-up epoch, 60 epochs, strong augmentation. FT (Swin-T): backbone learning rate $2.37\times10^{-5}$ (head multiplier 1), weight decay 0.0395 (none on biases, normalisation layers and position tables), batch 32, 2 warm-up epochs, 30 epochs, drop path 0.2, light augmentation. Every run uses seed 42 and the full training split (3{,}516 images, no subsampling) on a Kaggle Tesla T4 (16\,GB) with PyTorch 2.11 \citep{paszke2019pytorch}.
+\begin{table}[H]
+\centering\scriptsize
+\setlength{\tabcolsep}{4pt}
+\caption{Training configuration of the selected models.}\label{tab:config}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+ & CUSTOM (n07\_60ep) & FT (Swin-T, swin\_p2\_1) \\
+\midrule
+Loss & \multicolumn{2}{l}{Cross-entropy, class weights $\propto 1/\sqrt{n_c}$, no label smoothing, no mixup} \\
+Optimiser \& schedule & \multicolumn{2}{l}{AdamW \citep{loshchilov2019adamw}; linear warm-up + cosine decay \citep{loshchilov2017sgdr}; fp16 mixed precision} \\
+Learning rate & $3.17\cdot10^{-4}$ & backbone $2.37\cdot10^{-5}$, head $\times1$ \\
+Weight decay & 0.0464 & 0.0395 \\
+Batch / warm-up & 128 / 1 epoch & 32 / 2 epochs \\
+Epochs (selected epoch) & 60 (36) & 30 (26) \\
+Augmentation & strong & light, drop path 0.2 \\
+\midrule
+Common & \multicolumn{2}{l}{Seed 42; full train split (no subsampling); Kaggle Tesla T4; PyTorch 2.11 \citep{paszke2019pytorch}} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\textbf{Hyperparameter search.} CUSTOM hyperparameters come from a staged random search \citep{bergstra2012random} with median-stopping pruning \citep{golovin2017vizier}. Phase 1 drew 24 architecture and optimiser trials (15 epochs, pruned at epochs 4 and 8); phase 2 ran 16 trials of secondary hyperparameters around the best one; in phase 3 the three finalists, trained for 40 epochs, plateaued at 0.45--0.465 with train $\approx$ validation F1 (underfitting). Phase 4 therefore tested targeted capacity changes (the 48-channel widening), and phase 5 ran 12 deterministic runs in which only the 60-epoch budget gave a clear gain (seed noise $\pm0.008$). A deeper search of 121 trials (balanced design plus an evolutionary phase) reached 0.524 on validation but only 0.47 on the public test and was discarded. For FT, 10 configurations per network were run for 10 epochs (pruned at epoch 4 against the same network) and the top two per network were retrained for 30 epochs.
+\textbf{Search.} Random search \citep{bergstra2012random} with median-stopping pruning \citep{golovin2017vizier}, from coarse to fine:
+\begin{itemize}
+  \item \textbf{CUSTOM, phases 1--3:} 24 architecture/optimiser trials, 16 trials of secondary settings, 3 finalists at 40 epochs. All plateaued at 0.45--0.465 with train $\approx$ val (underfitting).
+  \item \textbf{CUSTOM, phases 4--5:} targeted changes; widening and 60 epochs were the only clear gains. A larger 121-trial search reached 0.524 on validation but 0.47 on public, so it was discarded.
+  \item \textbf{FT:} 10 configurations per network (10 epochs), then the best 2 per network retrained for 30 epochs.
+\end{itemize}
 
-\textbf{Selection and reproducibility.} Validation macro-F1 is computed after every epoch and the best epoch's weights are kept: epoch 36 (0.502) for CUSTOM and epoch 26 (0.546) for FT. No early stopping was used in the final runs (pruning exists only in the search). Training is fully deterministic: \code{torch.use\_deterministic\_algorithms(True)}, \code{CUBLAS\_WORKSPACE\_CONFIG=:4096:8}, deterministic cuDNN without benchmarking, and fixed Python, NumPy and PyTorch seeds, also for the four DataLoader workers (generator and \code{worker\_init\_fn}). A self-test that trains one epoch twice produced bit-identical weights. The validation split is used only for selection. Because it was reused many times, its scores are optimistic: we observed a validation-to-public gap of about 0.06 (\cref{tab:submissions}).
+\textbf{Selection and reproducibility.} We keep the weights of the epoch with the best validation macro-F1; there is no early stopping in the final runs. Training is fully deterministic (\code{use\_deterministic\_algorithms}, fixed seeds for all libraries and DataLoader workers): training one epoch twice gives bit-identical weights.

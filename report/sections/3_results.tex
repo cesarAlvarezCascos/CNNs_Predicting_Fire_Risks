@@ -1,17 +1,27 @@
 % ---------------------------------------------------------------------------------
-% 3. RESULTS AND ERROR ANALYSIS  (~1 page of text; tables/figures go on page 4)
-% Guide: macro-F1 + per-class P/R/F1 (train / val / public CodaBench kept apart);
-% experiment table; curves + confusion matrices (rows = true class, counts or %);
-% visual error analysis; public scores with submission IDs.
+% 3. RESULTS AND ERROR ANALYSIS
+% Guide: macro-F1 + per-class P/R/F1 (train / val / public apart); experiment table;
+% curves + confusion matrices; visual error analysis; public scores with submission IDs.
 % ---------------------------------------------------------------------------------
 \section{Results and error analysis}\label{sec:results}
 
-\textbf{Evaluation metrics.} The main metric is the \Fone{}, the unweighted mean of the seven per-class F1 scores, so the rare classes (Water, Very High; \cref{tab:data}) weigh as much as the frequent ones; per-class scores are given in \cref{tab:perclass}. Training F1 is only a diagnostic, every decision used the validation F1 (1,172 images), and the public CodaBench score (a fixed, undisclosed subset of the test set) was never used for selection.
+\textbf{Metrics.} The main metric is macro-F1 (mean of the seven per-class F1), so rare classes count as much as frequent ones. Validation F1 drove every decision; training F1 is only a diagnostic; the public CodaBench score was never used for selection.
 
-\textbf{Experimental comparison.} \Cref{tab:experiments} summarises the most informative runs. The reference CUSTOM notebook reached about 0.36 (StepLR divided the learning rate by 10 every 7 epochs) and our first GAP version 0.440 with training F1 $\approx$ 0.42, i.e.\ underfitting. Phases 1--3 of the search plateaued at 0.45--0.465 with train $\approx$ val, and inverse-frequency weights hurt (last-10 mean 0.431 vs 0.453). The decisive change was capacity: 48 channels and two convolutions per block raised the last-10 mean to 0.483, and 60 epochs gave the selected n07\_60ep (0.502 at epoch 36, last-10 0.489). Further changes (64 channels, a fifth block, a larger crop, CutMix, 80 epochs, a probability ensemble (0.492) and retraining on train+val) brought no gain; per-class bias tuning gave +0.022 in-sample but $\approx$0 under 2-fold CV, and seeds alone spread results by $\pm$0.008. For FINE-TUNING, every modern backbone beat the provided AlexNet recipe (0.452); Swin-T (swin\_p2\_1, 0.546) was preferred to ResNet-50 (0.539, training F1 0.99).
+\textbf{What helped and what did not} (\cref{tab:experiments}):
+\begin{itemize}
+  \item \textbf{CUSTOM:} the reference reached $\sim$0.36 and our first GAP version 0.440, both underfitting. The search plateaued at 0.45--0.465. More capacity (48 channels, 2 convs/block) and 60 epochs gave the selected model: \textbf{0.502}.
+  \item \textbf{No gain:} inverse-frequency weights (worse), 64 channels, 5 blocks, larger crops, CutMix, 80 epochs, ensembles, per-class threshold tuning and retraining on train+val. Seeds alone move results by $\pm0.008$.
+  \item \textbf{FT:} every modern backbone beat AlexNet (0.452); Swin-T was best with \textbf{0.546}.
+\end{itemize}
 
-\textbf{Learning curves and confusion matrices.} In \cref{fig:curves} the CUSTOM training and validation losses decrease together and the validation \Fone{} saturates around 0.49--0.50 from epoch 30, with the (augmented) training F1 at the same level (last-10 mean 0.524): the model does not overfit. The selected FT model, instead, reaches a training F1 of 0.77 against 0.546 on validation. The validation confusion matrices (\cref{fig:cm}, row-normalised \%, rows = true class) show where the remaining errors lie \todo{describe once the matrices are generated}.
+\textbf{Curves and confusion matrices.} For CUSTOM (\cref{fig:curves}) train and validation curves stay together and validation F1 saturates at 0.49--0.50 after epoch 30: no overfitting, the model is limited by the data. Swin-T fits the training set better (train F1 0.77 vs 0.546 on validation). \Cref{fig:cm} shows the validation confusion matrices (row-normalised \%) \todo{describe once generated}.
 
-\textbf{Visual error analysis.} Water (F1 0.847) and Non-burnable (0.796) are recognised reliably, whereas Low (0.221), Moderate (0.322) and High (0.333) are the weakest CUSTOM classes, and Low (0.17--0.33), Moderate (0.30--0.39) and Very High (0.29--0.43) the weakest for every FT model. The weak classes are the intermediate, ordinal risk levels, which suggests confusions between adjacent levels \todo{confirm with \cref{fig:cm,fig:errors} and describe the examples}. Even on the training set, evaluated without augmentation, the n07/n09 checkpoints reach only 0.53/0.59 (Low 0.30), which points to limited visual signal and label noise rather than lack of capacity. CUSTOM is small (2.74\,M parameters), fast and stable but saturates near 0.50; FT gains about 0.04 on validation from ImageNet features, at a higher compute cost and with more overfitting.
+\textbf{Error analysis} (\cref{tab:perclass}, \cref{fig:errors}).
+\begin{itemize}
+  \item \textbf{Easy:} Water (0.85) and Non-burnable (0.80).
+  \item \textbf{Hard:} the intermediate levels Low (0.22), Moderate (0.32) and High (0.33) for CUSTOM, and Low, Moderate and Very High for FT, which points to confusions between neighbouring risk levels \todo{confirm with \cref{fig:cm,fig:errors}}.
+  \item \textbf{Limited signal:} even on its own training images (no augmentation) CUSTOM only reaches 0.53 (Low 0.30), so the problem is the information in the image, not model capacity.
+  \item \textbf{CUSTOM vs FT:} CUSTOM is small (2.7\,M parameters), fast and stable; FT gains $+0.04$ on validation at a higher compute cost.
+\end{itemize}
 
-\textbf{Competition feedback.} \Cref{tab:submissions} lists the public scores: 0.49 for the best CUSTOM entry (p4\_09\_B, submission 1036062) and 0.48 for the selected FT model. Every model, ensembles included, loses about 0.06 from validation to public, because the same validation images were reused over hundreds of trials, the public subset is noisy and the intermediate classes are ambiguous; the predicted test class proportions match validation, so no distribution shift is apparent. The deep-search model F3\_B\_038 illustrates this: best validation score (0.524), only 0.47 on public.
+\textbf{Competition} (\cref{tab:submissions}). Best public scores: \textbf{0.49} CUSTOM (p4\_09\_B, submission 1036062) and \textbf{0.48} FT (swin\_p2\_1). Every model loses about 0.06 from validation to public, because the same validation images were reused for hundreds of trials and the public subset is small. For example, the 121-trial model had the best validation score (0.524) but only 0.47 on public.
