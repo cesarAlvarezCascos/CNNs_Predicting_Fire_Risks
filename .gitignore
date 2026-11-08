@@ -6,8 +6,7 @@
 !README.md
 !Lab_4_AVCV_.ipynb
 !final/
-!README.md
-
+!final/*
 
 # db.zip (~970 MB) y db/ (imágenes): superan el límite de GitHub (100 MB por archivo).
 # Se comparten por Google Drive, o se suben como asset de una Release de GitHub

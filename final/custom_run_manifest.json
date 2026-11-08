@@ -1,0 +1,63 @@
+{
+  "created": "2026-11-08T17:44:31",
+  "trial_id": "n07_60ep",
+  "mode": "checkpoint",
+  "smoke_test": false,
+  "epochs": 60,
+  "config": {
+    "base_channels": 48,
+    "n_blocks": 4,
+    "convs_per_block": 2,
+    "kernel_size": 3,
+    "head": "gap",
+    "hidden": 256,
+    "dropout": 0.3,
+    "train_crop": 224,
+    "eval_size": 320,
+    "optimizer": "adamw",
+    "lr": 0.000317,
+    "weight_decay": 0.0464,
+    "batch_size": 128,
+    "warmup_epochs": 1,
+    "label_smoothing": 0.0,
+    "class_weights": "sqrt_inv",
+    "mixup_alpha": 0.0,
+    "aug": "strong",
+    "epochs": 60,
+    "seed": 42,
+    "trial_id": "n07_60ep",
+    "pool_impl": "mean"
+  },
+  "runtime_expected": {
+    "num_workers": 4,
+    "strict_determinism": true,
+    "pool_impl": "mean",
+    "preload": false,
+    "amp": true,
+    "gpu": "Tesla T4"
+  },
+  "runtime_actual": {
+    "num_workers": 4,
+    "strict_determinism": true
+  },
+  "seed": 42,
+  "val_macro_f1": 0.5042652706043872,
+  "checkpoint": "/kaggle/input/datasets/csarlvarezcascos/final-models/n07_60ep.pt",
+  "checkpoint_sha256": "28154f551bca71210487008cf2b955d027039dc71b97a0e99a4e7bd9413d7257",
+  "output_csv": "/kaggle/working/outputs/Lab_4_OUT/output_custom.csv",
+  "output_csv_sha256": "c6288bf17d74dd876a022d371f719b77ece43f1d6798826dab1a4ee14c48b3cf",
+  "reproducibility_check": null,
+  "submission_check": null,
+  "environment": {
+    "python": "3.13.16",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cu130",
+    "torchvision": "0.26.0+cu130",
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "cuda": "13.0",
+    "cudnn": 92700,
+    "gpu": "Tesla T4"
+  },
+  "history": []
+}
