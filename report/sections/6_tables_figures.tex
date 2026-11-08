@@ -1,126 +1,155 @@
 % ---------------------------------------------------------------------------------
 % PAGE 4: TABLES AND FIGURES (+ references, added in main.tex)
 % Figures: put PNG/PDF files in figures/ and replace the \fbox placeholders by
-% \includegraphics[width=\linewidth]{figures/<file>}.
+% \includegraphics[width=\linewidth,height=<same height>,keepaspectratio]{figures/<file>}.
+% Learning curves are drawn with pgfplots from data/*.csv
+% (needs \usepackage{pgfplots}\pgfplotsset{compat=1.17} in main.tex).
 % ---------------------------------------------------------------------------------
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\textfloatsep}{4pt}
+\setlength{\floatsep}{4pt}
+\setlength{\intextsep}{3pt}
 
 % ---- Table 1: experiments (required: category, change, objective, budget, val macro-F1) ----
 \begin{table}[H]
 \centering\scriptsize
-\caption{Main experiments (validation macro-F1). Reference and selected models in bold.}
+\caption{Main experiments: validation macro-F1 at the best epoch (L10: mean of the last 10 epochs). Reference and selected models in bold.}
 \label{tab:experiments}
-\begin{tabularx}{\linewidth}{@{}l l X l c@{}}
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.95}
+\begin{tabularx}{\linewidth}{@{}l l X l l@{}}
 \toprule
 Cat. & Change & Objective & Budget & Val F1 \\
 \midrule
-CUSTOM & \textbf{Reference notebook} & Baseline & \todo{} & \todo{} \\
-CUSTOM & Phases 1--2 random search & Architecture, optimiser, regularisation & 15 ep & \todo{} \\
-CUSTOM & 48 ch, 2 convs/block & More capacity (underfitting) & 40 ep & 0.496 \\
-CUSTOM & \textbf{60 epochs (n07\_60ep)} & Longer schedule & 60 ep & 0.502 \\
-CUSTOM & \todo{more rows} & & & \\
+CUSTOM & \textbf{Reference notebook (StepLR)} & Baseline & \todo{} ep & $\approx$0.36 \\
+CUSTOM & GAP instead of Flatten (first version) & Fewer FC parameters; train F1 $\approx$0.42 & \todo{} ep & 0.440 \\
+CUSTOM & Phases 1--3 random search & Architecture, optimiser, regularisation & 15 ep (finalists 40) & 0.45--0.465 \\
+CUSTOM & Inverse-frequency class weights & Help minority classes & \todo{} ep & L10 0.431 vs 0.453 \\
+CUSTOM & 48 ch, 2 convs/block (p4\_09\_B) & More capacity (underfitting) & 40 ep & 0.496 (L10 0.483) \\
+CUSTOM & 64 ch; 5 blocks; crop 288/eval 320 & More capacity / resolution & 40 ep & no gain \\
+CUSTOM & \textbf{60 epochs (n07\_60ep)} & Longer schedule & 60 ep & \textbf{0.502} (L10 0.489) \\
+CUSTOM & CutMix (standard; risk-only) & Regularisation & \todo{}; 80 ep & L10 0.483; 0.470 vs 0.486 \\
+CUSTOM & Deep search (F3\_B\_038) & Joint search, 121 trials & 80 ep, input 320 & 0.524 \\
 \midrule
-FT & AlexNet (provided) & Baseline & 5 ep & \todo{} \\
-FT & \textbf{Swin-T (swin\_p2\_1)} & Selected FT & 30 ep & 0.546 \\
-FT & \todo{more rows} & & & \\
+FT & \textbf{AlexNet (provided recipe)} & Baseline & 5 ep & 0.452 \\
+FT & ConvNeXt-T (cnx\_p2\_0) & Modern CNN backbone & 30 ep & 0.505 \\
+FT & ResNet-50 (r50\_p2\_0) & Residual backbone (train F1 0.99) & 30 ep & 0.539 \\
+FT & \textbf{Swin-T (swin\_p2\_1)} & Transformer backbone & 30 ep & \textbf{0.546} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-% ---- Table 2: per-class metrics of the selected models (validation) ----
+% ---- Table 2 (class distribution + per-class F1, transposed) | Table 3 (public submissions) over Table 4 (architecture) ----
 \begin{table}[H]
 \centering\scriptsize
-\caption{Per-class validation precision / recall / F1 of the selected models.}
-\label{tab:perclass}
-\begin{tabular}{@{}l ccccccc c@{}}
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.95}
+\begin{minipage}[t]{0.39\linewidth}\centering
+\captionof{table}{Class counts and per-class validation F1 of the selected models. \todo{P/R}}
+\label{tab:data}\label{tab:perclass}
+\begin{tabular}{@{}l rr cc@{}}
 \toprule
-Model & Water & V.\,Low & Low & Mod. & High & V.\,High & Non-b. & Macro \\
+Class & Train & Val & CUSTOM & FT \\
 \midrule
-CUSTOM F1 & \todo{} & & & & & & & \\
-FT F1 & \todo{} & & & & & & & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ---- Table 3: public CodaBench submissions ----
-\begin{table}[H]
-\centering\scriptsize
-\caption{Public CodaBench scores (fixed undisclosed subset of the test set).}
-\label{tab:submissions}
-\begin{tabular}{@{}l l l c c@{}}
-\toprule
-Submission ID & Date & Models (custom / ft) & CUSTOM & FT \\
+0 Water & 86 & 29 & 0.847 & \todo{} \\
+1 Very Low & 1,088 & 363 & 0.598 & \\
+2 Low & 535 & 178 & 0.221 & \\
+3 Moderate & 431 & 144 & 0.322 & \\
+4 High & 315 & 105 & 0.333 & \\
+5 Very High & 163 & 54 & 0.400 & \\
+6 Non-burnable & 898 & 299 & 0.796 & \\
 \midrule
-1036062 & 05 Nov & p4\_09\_B / placeholder & 0.49 & -- \\
-\todo{} & & & & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-% ---- Figures ----
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.49\linewidth}\centering
-  \fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering\todo{CUSTOM curves}}}
-  \caption{CUSTOM}
-\end{subfigure}\hfill
-\begin{subfigure}{0.49\linewidth}\centering
-  \fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering\todo{FT curves}}}
-  \caption{FINE-TUNING}
-\end{subfigure}
-\caption{Training/validation loss and macro-F1 per epoch.}
-\label{fig:curves}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{0.49\linewidth}\centering
-  \fbox{\parbox[c][3.5cm][c]{0.9\linewidth}{\centering\todo{CUSTOM confusion matrix}}}
-  \caption{CUSTOM}
-\end{subfigure}\hfill
-\begin{subfigure}{0.49\linewidth}\centering
-  \fbox{\parbox[c][3.5cm][c]{0.9\linewidth}{\centering\todo{FT confusion matrix}}}
-  \caption{FINE-TUNING}
-\end{subfigure}
-\caption{Validation confusion matrices, row-normalised (\%); rows = true class, columns = predicted class.}
-\label{fig:cm}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\fbox{\parbox[c][2.5cm][c]{0.95\linewidth}{\centering\todo{grid of misclassified validation images (true / predicted)}}}
-\caption{Representative validation errors (true $\rightarrow$ predicted).}
-\label{fig:errors}
-\end{figure}
-
-% ---- Small tables referenced from the text (move/merge as space allows) ----
-\begin{table}[H]
-\centering\scriptsize
-\begin{minipage}[t]{0.42\linewidth}\centering
-\caption{Class distribution.}\label{tab:data}
-\begin{tabular}{@{}l rr@{}}
-\toprule
-Class & Train & Val \\
-\midrule
-0 Water & 86 & \todo{} \\
-1 Very Low & 1,088 & \\
-2 Low & 535 & \\
-3 Moderate & 431 & \\
-4 High & 315 & \\
-5 Very High & 163 & \\
-6 Non-burnable & 898 & \\
+Total / macro & 3,516 & 1,172 & 0.502 & 0.546 \\
 \bottomrule
 \end{tabular}
 \end{minipage}\hfill
-\begin{minipage}[t]{0.55\linewidth}\centering
-\caption{Final CUSTOM architecture.}\label{tab:arch}
+\begin{minipage}[t]{0.59\linewidth}\centering
+\captionof{table}{Public CodaBench macro-F1 (fixed undisclosed test subset). Also: F1\_B\_037 0.47, swin\_p2\_0 0.48, r50\_p2\_0 0.47.}
+\label{tab:submissions}
+\begin{tabular}{@{}l l l c c@{}}
+\toprule
+ID & Date & Models (custom / ft) & CUSTOM & FT \\
+\midrule
+1036062 & 05 Nov & p4\_09\_B / placeholder & 0.49 & -- \\
+\todo{} & \todo{} & n07 (train+val) / \todo{} & 0.494 & \todo{} \\
+\todo{} & \todo{} & F3\_B\_038 / AlexNet & 0.47 & \todo{} \\
+\todo{} & \todo{} & \todo{} / swin\_p2\_1 & \todo{} & 0.48 \\
+\todo{} & \todo{} & \todo{} / FT ensemble (3) & \todo{} & 0.48 \\
+\bottomrule
+\end{tabular}
+
+\vspace{3pt}
+\captionof{table}{Final CUSTOM architecture.}\label{tab:arch}
 \begin{tabular}{@{}l l r@{}}
 \toprule
 Stage & Layers & Output \\
 \midrule
 Input & RGB crop & $3\times224\times224$ \\
-Block 1--4 & [Conv3x3-BN-ReLU]$\times$2, MaxPool & \todo{} \\
-Head & GAP, FC 256, ReLU, Dropout 0.3, FC 7 & 7 \\
+Blocks 1--4 & [Conv3$\times$3-BN-ReLU]$\times$2, MaxPool 2$\times$2 & 48/96/192/384 ch \\
+ & (spatial size 112/56/28/14) & $384\times14\times14$ \\
+GAP & spatial mean & 384 \\
+Head & FC 384$\to$256, ReLU, Dropout 0.3, FC 256$\to$7 & 7 \\
+\midrule
+\multicolumn{3}{@{}l}{2,739,447 parameters; Kaiming initialisation.} \\
 \bottomrule
 \end{tabular}
 \end{minipage}
 \end{table}
+
+% ---- Figures: learning curves | confusion matrices (one row), then error examples ----
+% FT curves: add \addplot lines from data/<ft>_epochs.csv to the same two axes.
+\pgfplotsset{lcurve/.style={
+  width=1.12\linewidth, height=3.3cm,
+  xmin=1, xmax=60, xtick={1,12,24,36,48,60},
+  tick label style={font=\tiny}, label style={font=\tiny},
+  xlabel={epoch}, xlabel style={yshift=5pt}, ylabel style={yshift=-6pt},
+  legend style={font=\tiny, draw=none, fill=none, inner sep=1pt, row sep=-3pt},
+  legend cell align=left, every axis plot/.append style={line width=0.6pt}}}
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.49\linewidth}\centering
+\begin{subfigure}[t]{0.49\linewidth}\centering
+\begin{tikzpicture}
+\begin{axis}[lcurve, ylabel={loss}, legend pos=north east]
+  \addplot[blue, no markers] table[x=epoch, y=train_loss, col sep=comma] {data/n07_60ep_epochs.csv};
+  \addplot[red, no markers] table[x=epoch, y=val_loss, col sep=comma] {data/n07_60ep_epochs.csv};
+  \draw[gray, dashed] (axis cs:36,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:36,\pgfkeysvalueof{/pgfplots/ymax});
+  \legend{train, val}
+\end{axis}
+\end{tikzpicture}
+\caption{Loss}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.49\linewidth}\centering
+\begin{tikzpicture}
+\begin{axis}[lcurve, ylabel={macro-F1}, legend pos=south east]
+  \addplot[blue, no markers] table[x=epoch, y=train_f1, col sep=comma] {data/n07_60ep_epochs.csv};
+  \addplot[red, no markers] table[x=epoch, y=val_f1, col sep=comma] {data/n07_60ep_epochs.csv};
+  \draw[gray, dashed] (axis cs:36,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:36,\pgfkeysvalueof{/pgfplots/ymax});
+  \addplot[red, only marks, mark=*, mark size=1.2pt, forget plot] coordinates {(36,0.5024)};
+  \legend{train, val}
+\end{axis}
+\end{tikzpicture}
+\caption{Macro-F1}
+\end{subfigure}
+\captionof{figure}{Train (augmented) and validation curves, CUSTOM n07\_60ep; dashed: selected epoch 36. \todo{FT curves}}
+\label{fig:curves}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\linewidth}\centering
+\begin{subfigure}[t]{0.49\linewidth}\centering
+  \fbox{\parbox[c][2.5cm][c]{0.9\linewidth}{\centering\todo{CUSTOM CM}}}
+  \caption{CUSTOM (n07\_60ep)}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.49\linewidth}\centering
+  \fbox{\parbox[c][2.5cm][c]{0.9\linewidth}{\centering\todo{FT CM}}}
+  \caption{FT (swin\_p2\_1)}
+\end{subfigure}
+\captionof{figure}{Validation confusion matrices, row-normalised (\%); rows = true, columns = predicted class.}
+\label{fig:cm}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][1.6cm][c]{0.98\linewidth}{\centering\todo{one row of misclassified validation images, each with true / predicted label}}}
+\caption{Representative validation errors of the selected models (true $\rightarrow$ predicted class).}
+\label{fig:errors}
+\end{figure}

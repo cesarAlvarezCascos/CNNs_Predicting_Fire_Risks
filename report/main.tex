@@ -25,6 +25,8 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{placeins}
+\usepackage{multicol}
+\usepackage{pgfplots}\pgfplotsset{compat=1.17}
 \usepackage[font=small,labelfont=bf,skip=3pt]{caption}
 \usepackage{subcaption}
 \usepackage{enumitem}
@@ -69,9 +71,12 @@
 \clearpage
 \input{sections/6_tables_figures}
 
-{\footnotesize
+{\scriptsize
+\begin{multicols}{2}
 \bibliographystyle{unsrtnat}
 \setlength{\bibsep}{0pt}
-\bibliography{references}}
+\renewcommand{\refname}{\normalsize\bfseries REFERENCES}
+\bibliography{references}
+\end{multicols}}
 
 \end{document}

@@ -54,3 +54,5 @@ Slides/
 !report/figures/*.png
 !report/figures/*.pdf
 !report/figures/.gitkeep
+!report/data/
+!report/data/*.csv
