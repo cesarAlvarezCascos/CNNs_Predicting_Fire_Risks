@@ -43,26 +43,28 @@ FT & \textbf{Swin-T (swin\_p2\_1)} & Transformer backbone & 30 ep & \textbf{0.54
 \begin{table}[H]
 \centering\scriptsize
 \setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.95}
-\begin{minipage}[t]{0.39\linewidth}\centering
-\captionof{table}{Class counts and per-class validation F1 of the selected models. \todo{P/R}}
+\begin{minipage}[t]{0.47\linewidth}\centering
+\captionof{table}{Class counts and per-class validation precision / recall / F1 of the selected models.}
 \label{tab:data}\label{tab:perclass}
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}l rr cc@{}}
 \toprule
-Class & Train & Val & CUSTOM & FT \\
+Class & Train & Val & CUSTOM P/R/F1 & FT P/R/F1 \\
 \midrule
-0 Water & 86 & 29 & 0.847 & \todo{} \\
-1 Very Low & 1,088 & 363 & 0.598 & \\
-2 Low & 535 & 178 & 0.221 & \\
-3 Moderate & 431 & 144 & 0.322 & \\
-4 High & 315 & 105 & 0.333 & \\
-5 Very High & 163 & 54 & 0.400 & \\
-6 Non-burnable & 898 & 299 & 0.796 & \\
+0 Water & 86 & 29 & .83/.86/.85 & .81/.86/.83 \\
+1 Very Low & 1,088 & 363 & .59/.60/.60 & .65/.61/.63 \\
+2 Low & 535 & 178 & .27/.19/.22 & .33/.33/.33 \\
+3 Moderate & 431 & 144 & .29/.35/.32 & .39/.37/.38 \\
+4 High & 315 & 105 & .31/.36/.33 & .39/.42/.41 \\
+5 Very High & 163 & 54 & .41/.39/.40 & .41/.44/.43 \\
+6 Non-burnable & 898 & 299 & .79/.80/.80 & .80/.83/.81 \\
 \midrule
-Total / macro & 3,516 & 1,172 & 0.502 & 0.546 \\
+Total / macro & 3,516 & 1,172 & .500/.508/\textbf{.502} & .539/.553/\textbf{.546} \\
+Accuracy & & & .535 & .577 \\
 \bottomrule
 \end{tabular}
 \end{minipage}\hfill
-\begin{minipage}[t]{0.59\linewidth}\centering
+\begin{minipage}[t]{0.51\linewidth}\centering
 \captionof{table}{Public CodaBench macro-F1 (fixed undisclosed test subset). Also: F1\_B\_037 0.47, swin\_p2\_0 0.48, r50\_p2\_0 0.47.}
 \label{tab:submissions}
 \begin{tabular}{@{}l l l c c@{}}
@@ -106,14 +108,15 @@ Head & FC 384$\to$256, ReLU, Dropout 0.3, FC 256$\to$7 & 7 \\
   legend cell align=left, every axis plot/.append style={line width=0.6pt}}}
 \begin{figure}[H]
 \centering
-\begin{minipage}[t]{0.49\linewidth}\centering
+\begin{minipage}[t]{0.8\linewidth}\centering
 \begin{subfigure}[t]{0.49\linewidth}\centering
 \begin{tikzpicture}
 \begin{axis}[lcurve, ylabel={loss}, legend pos=north east]
   \addplot[blue, no markers] table[x=epoch, y=train_loss, col sep=comma] {data/n07_60ep_epochs.csv};
   \addplot[red, no markers] table[x=epoch, y=val_loss, col sep=comma] {data/n07_60ep_epochs.csv};
-  \draw[gray, dashed] (axis cs:36,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:36,\pgfkeysvalueof{/pgfplots/ymax});
-  \legend{train, val}
+  \addplot[teal, no markers, densely dashed] table[x=epoch, y=train_loss, col sep=comma] {data/swin_p2_1_epochs.csv};
+  \addplot[orange, no markers, densely dashed] table[x=epoch, y=val_loss, col sep=comma] {data/swin_p2_1_epochs.csv};
+  \legend{CUSTOM train, CUSTOM val, FT train, FT val}
 \end{axis}
 \end{tikzpicture}
 \caption{Loss}
@@ -123,33 +126,16 @@ Head & FC 384$\to$256, ReLU, Dropout 0.3, FC 256$\to$7 & 7 \\
 \begin{axis}[lcurve, ylabel={macro-F1}, legend pos=south east]
   \addplot[blue, no markers] table[x=epoch, y=train_f1, col sep=comma] {data/n07_60ep_epochs.csv};
   \addplot[red, no markers] table[x=epoch, y=val_f1, col sep=comma] {data/n07_60ep_epochs.csv};
-  \draw[gray, dashed] (axis cs:36,\pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:36,\pgfkeysvalueof{/pgfplots/ymax});
+  \addplot[teal, no markers, densely dashed] table[x=epoch, y=train_f1, col sep=comma] {data/swin_p2_1_epochs.csv};
+  \addplot[orange, no markers, densely dashed] table[x=epoch, y=val_f1, col sep=comma] {data/swin_p2_1_epochs.csv};
   \addplot[red, only marks, mark=*, mark size=1.2pt, forget plot] coordinates {(36,0.5024)};
-  \legend{train, val}
+  \addplot[orange, only marks, mark=*, mark size=1.2pt, forget plot] coordinates {(26,0.5457)};
+  \legend{CUSTOM train, CUSTOM val, FT train, FT val}
 \end{axis}
 \end{tikzpicture}
 \caption{Macro-F1}
 \end{subfigure}
-\captionof{figure}{Train (augmented) and validation curves, CUSTOM n07\_60ep; dashed: selected epoch 36. \todo{FT curves}}
+\caption{Train (with augmentation) and validation curves of the selected models; dots mark the selected epochs (CUSTOM 36, FT 26).}
 \label{fig:curves}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\linewidth}\centering
-\begin{subfigure}[t]{0.49\linewidth}\centering
-  \fbox{\parbox[c][2.5cm][c]{0.9\linewidth}{\centering\todo{CUSTOM CM}}}
-  \caption{CUSTOM (n07\_60ep)}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.49\linewidth}\centering
-  \fbox{\parbox[c][2.5cm][c]{0.9\linewidth}{\centering\todo{FT CM}}}
-  \caption{FT (swin\_p2\_1)}
-\end{subfigure}
-\captionof{figure}{Validation confusion matrices, row-normalised (\%); rows = true, columns = predicted class.}
-\label{fig:cm}
 \end{minipage}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\fbox{\parbox[c][1.6cm][c]{0.98\linewidth}{\centering\todo{one row of misclassified validation images, each with true / predicted label}}}
-\caption{Representative validation errors of the selected models (true $\rightarrow$ predicted class).}
-\label{fig:errors}
 \end{figure}
