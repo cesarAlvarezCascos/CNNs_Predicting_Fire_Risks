@@ -18,6 +18,8 @@ Nothing else: no `final/`, `search/` or `outputs/` files are needed. Run all cel
 | `SMOKE_TEST` | `0` | `1` uses 64 images and 1 epoch, only to check that everything executes |
 | `PREDICT_SIZE`, `FT_PREDICT_SIZE` | `320` | Image size of the final predictions (320 = full image) |
 
+> **Recommended:** if you have the trained models (`n07_60ep.pt` and `ft_final_swin_p2_1.pt`), set `USE_CHECKPOINTS = True`. It saves about 1 h of training. It also keeps the results exactly reproducible, because the loaded weights are the same ones we used, with every decimal intact. Retraining on the GPU can change the weights very slightly.
+
 The result is `outputs/Lab_4_OUT/codabench_submission.zip` (`output_custom.csv` + `output_ft.csv`). At the end, the notebook compares its predictions with the fingerprint (SHA-256) of the files we submitted to Codabench.
 
 ## How the original notebook works, and what changes here
