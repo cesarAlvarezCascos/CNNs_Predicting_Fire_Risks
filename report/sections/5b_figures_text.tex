@@ -4,21 +4,21 @@
 % ---------------------------------------------------------------------------------
 \begin{figure}[H]
 \centering
-\begin{subfigure}[t]{0.27\linewidth}\centering
+\begin{subfigure}[t]{0.21\linewidth}\centering
   \includegraphics[width=\linewidth]{figures/confusion_custom.png}
   \caption{CUSTOM}
 \end{subfigure}\qquad
-\begin{subfigure}[t]{0.27\linewidth}\centering
+\begin{subfigure}[t]{0.21\linewidth}\centering
   \includegraphics[width=\linewidth]{figures/confusion_ft.png}
   \caption{FT (Swin-T)}
 \end{subfigure}
-\caption{Validation confusion matrices of the selected models, row-normalised (\%): rows are true classes, columns predicted classes.}
+\caption{Validation confusion matrices, row-normalised (\%); rows = true class, columns = predicted class.}
 \label{fig:cm}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/errors_grid.png}
-\caption{Validation errors made by both models. For each true class we show the image that both models misclassify with the most confident FT prediction (automatic choice, not hand-picked).}
+\includegraphics[width=0.78\linewidth]{figures/errors_grid.png}
+\caption{Validation errors of both models: per true class, the shared error with the most confident FT prediction (chosen automatically).}
 \label{fig:errors}
 \end{figure}
