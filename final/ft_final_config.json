@@ -5,7 +5,8 @@
       "arch": {
         "arch": "swin_t",
         "drop_path": 0.2,
-        "eval_size": 320
+        "eval_size": 224,
+        "predict_size": 320
       },
       "train": {
         "lr": 2.37e-05,

@@ -4,6 +4,7 @@
 # Archivos que SÍ se suben al repo
 !.gitignore
 !README.md
+!HOW_TO_RUN.md
 !Lab_4_AVCV_.ipynb
 !final/
 !final/*

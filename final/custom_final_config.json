@@ -61,7 +61,8 @@
         "hidden": 256,
         "dropout": 0.3,
         "train_crop": 224,
-        "eval_size": 320
+        "eval_size": 224,
+        "predict_size": 320
       },
       "train": {
         "optimizer": "adamw",
