@@ -22,13 +22,13 @@
 Cat. & Change & Objective & Budget & Val F1 \\
 \midrule
 CUSTOM & \textbf{Reference notebook (StepLR)} & Baseline & \todo{} ep & $\approx$0.36 \\
-CUSTOM & GAP instead of Flatten (first version) & Fewer FC parameters; train F1 $\approx$0.42 & \todo{} ep & 0.440 \\
+CUSTOM & GAP instead of Flatten (first version) & Fewer FC parameters; train F1 $\approx$0.42 & 30 ep & 0.440 \\
 CUSTOM & Phases 1--3 random search & Architecture, optimiser, regularisation & 15 ep (finalists 40) & 0.45--0.465 \\
-CUSTOM & Inverse-frequency class weights & Help minority classes & \todo{} ep & L10 0.431 vs 0.453 \\
+CUSTOM & Inverse-frequency class weights & Help minority classes & 40 ep & L10 0.431 vs 0.453 \\
 CUSTOM & 48 ch, 2 convs/block (p4\_09\_B) & More capacity (underfitting) & 40 ep & 0.496 (L10 0.483) \\
 CUSTOM & 64 ch; 5 blocks; crop 288/eval 320 & More capacity / resolution & 40 ep & no gain \\
 CUSTOM & \textbf{60 epochs (n07\_60ep)} & Longer schedule & 60 ep & \textbf{0.502} (L10 0.489) \\
-CUSTOM & CutMix (standard; risk-only) & Regularisation & \todo{}; 80 ep & L10 0.483; 0.470 vs 0.486 \\
+CUSTOM & CutMix (standard; risk-only) & Regularisation & 80 ep & L10 0.483; 0.470 vs 0.486 \\
 CUSTOM & Deep search (F3\_B\_038) & Joint search, 121 trials & 80 ep, input 320 & 0.524 \\
 \midrule
 FT & \textbf{AlexNet (provided recipe)} & Baseline & 5 ep & 0.452 \\
