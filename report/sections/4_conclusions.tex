@@ -5,9 +5,6 @@
 % ---------------------------------------------------------------------------------
 \section{Conclusions}\label{sec:conclusions}
 
-\begin{itemize}
-  \item \textbf{Largest effects.} CUSTOM: GAP head, more width and a longer schedule (0.44 $\to$ 0.50). FT: the ImageNet pretraining itself, with a small backbone learning rate (0.546 in 30 epochs).
-  \item \textbf{Scratch vs fine-tuning.} FT is clearly better on validation, but both score about the same on the public subset (0.49 vs 0.48).
-  \item \textbf{Main limitation.} The intermediate classes are hard even on training images, and reusing one validation set for selection inflates its scores ($\sim$0.06). The original FireRisk paper reports only 61--65\% accuracy with $\sim$91k images \citep{shen2023firerisk}.
-  \item \textbf{Next steps.} $k$-fold cross-validation for honest selection, losses that use the class order, remote-sensing pretraining and higher input resolution.
-\end{itemize}
+The largest effects came from different sources in the two systems. For CUSTOM, the GAP head, the extra width and the longer schedule together raised validation macro-F1 from 0.44 to 0.50. For FT, the ImageNet pretraining itself was decisive: with a small backbone learning rate, Swin-T reached 0.546 in 30 epochs. Fine-tuning is therefore clearly better on validation, yet both systems score about the same on the public subset (0.49 vs 0.48).
+
+The main limitation lies in the data rather than in the models. The intermediate classes are hard even on training images, and reusing a single validation set for selection inflates its scores by about 0.06. For reference, the original FireRisk paper reports only 61--65\% accuracy with about 91k images \citep{shen2023firerisk}. Realistic next steps are $k$-fold cross-validation for a more honest selection, losses that exploit the order of the classes, remote-sensing pretraining and a higher input resolution.

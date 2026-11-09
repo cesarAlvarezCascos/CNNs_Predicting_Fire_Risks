@@ -5,23 +5,19 @@
 % ---------------------------------------------------------------------------------
 \section{Results and error analysis}\label{sec:results}
 
-\textbf{Metrics.} The main metric is macro-F1 (mean of the seven per-class F1), so rare classes count as much as frequent ones. Validation F1 drove every decision; training F1 is only a diagnostic; the public CodaBench score was never used for selection.
+Our main metric is macro-F1, the mean of the seven per-class F1 scores, so that rare classes count as much as frequent ones. Every decision was based on validation F1; training F1 served only as a diagnostic, and the public CodaBench score was never used for selection.
 
-\textbf{What helped and what did not} (\cref{tab:experiments}):
+\Cref{tab:experiments} summarises the experiments. The reference network reached only about 0.36 macro-F1, and our first version with a GAP head reached 0.440. Both, however, scored almost the same on training and validation data, a clear sign of underfitting. The random search confirmed this, as it plateaued at 0.45--0.465. We therefore increased capacity instead, widening the network to 48 base channels with two convolutions per block, and trained for 60 epochs, which produced the final CUSTOM network (n07\_60ep) with 0.502. Several other ideas brought no gain:
 \begin{itemize}
-  \item \textbf{CUSTOM:} the reference reached $\sim$0.36 and our first GAP version 0.440, both underfitting. The search plateaued at 0.45--0.465. More capacity (48 channels, 2 convs/block) and 60 epochs gave the selected model: \textbf{0.502}.
-  \item \textbf{No gain:} inverse-frequency weights (worse), 64 channels, 5 blocks, larger crops, CutMix, 80 epochs, ensembles, per-class threshold tuning and retraining on train+val. Seeds alone move results by $\pm0.008$.
-  \item \textbf{FT:} every modern backbone beat AlexNet (0.452); Swin-T was best with \textbf{0.546}.
+  \item inverse-frequency class weights, which made results worse;
+  \item more capacity (64 channels, five blocks) or larger crops;
+  \item CutMix and longer training (80 epochs);
+  \item ensembles, per-class threshold tuning and retraining on train+val.
 \end{itemize}
+Changing only the seed already moves results by $\pm0.008$, so smaller differences are not meaningful. For FT, every modern backbone beat AlexNet (0.452), and Swin-T was the best with 0.546.
 
-\textbf{Curves and confusion matrices.} For CUSTOM (\cref{fig:curves}) train and validation curves stay together and validation F1 saturates at 0.49--0.50 after epoch 30: no overfitting, the model is limited by the data. Swin-T fits the training set better (train F1 0.77 vs 0.546 on validation). \Cref{fig:cm} shows the validation confusion matrices (row-normalised \%) \todo{describe once generated}.
+The learning curves of CUSTOM (\cref{fig:curves}) show training and validation curves that stay together, with validation F1 saturating at 0.49--0.50 after epoch 30. The model therefore does not overfit; it is limited by the data. Swin-T, in contrast, fits the training set better, with a training F1 of 0.77 against 0.546 on validation. \Cref{fig:cm} shows the validation confusion matrices (row-normalised \%) \todo{describe once generated}.
 
-\textbf{Error analysis} (\cref{tab:perclass}, \cref{fig:errors}).
-\begin{itemize}
-  \item \textbf{Easy:} Water (0.85) and Non-burnable (0.80).
-  \item \textbf{Hard:} the intermediate levels Low (0.22), Moderate (0.32) and High (0.33) for CUSTOM, and Low, Moderate and Very High for FT, which points to confusions between neighbouring risk levels \todo{confirm with \cref{fig:cm,fig:errors}}.
-  \item \textbf{Limited signal:} even on its own training images (no augmentation) CUSTOM only reaches 0.53 (Low 0.30), so the problem is the information in the image, not model capacity.
-  \item \textbf{CUSTOM vs FT:} CUSTOM is small (2.7\,M parameters), fast and stable; FT gains $+0.04$ on validation at a higher compute cost.
-\end{itemize}
+The per-class results (\cref{tab:perclass}, \cref{fig:errors}) show that Water (0.85) and Non-burnable (0.80) are easy to recognise. The difficult classes are the intermediate levels: Low (0.22), Moderate (0.32) and High (0.33) for CUSTOM, and Low, Moderate and Very High for FT, which points to confusions between neighbouring risk levels \todo{confirm with \cref{fig:cm,fig:errors}}. The difficulty does not seem to come from model capacity: even on its own training images, evaluated without augmentation, CUSTOM reaches only 0.53 (Low 0.30), which suggests that the images themselves carry limited information about these classes. Overall, CUSTOM is small (2.7\,M parameters), fast and stable, while FT gains $+0.04$ on validation at a higher compute cost.
 
-\textbf{Competition} (\cref{tab:submissions}). Best public scores: \textbf{0.49} CUSTOM (p4\_09\_B, submission 1036062) and \textbf{0.48} FT (swin\_p2\_1). Every model loses about 0.06 from validation to public, because the same validation images were reused for hundreds of trials and the public subset is small. For example, the 121-trial model had the best validation score (0.524) but only 0.47 on public.
+On the public leaderboard (\cref{tab:submissions}), our best scores are 0.49 for CUSTOM, obtained with an earlier 40-epoch version of the widened network (p4\_09\_B), and 0.48 for FT with Swin-T. Every model loses about 0.06 from validation to public, because the same validation images were reused across hundreds of trials and the public subset is small. The best model of the 121-trial search illustrates this: it had the highest validation score (0.524) but only 0.47 on the public subset.
