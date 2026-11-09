@@ -21,7 +21,7 @@
 \toprule
 Cat. & Change & Objective & Budget & Val F1 \\
 \midrule
-CUSTOM & \textbf{Reference notebook (StepLR)} & Baseline & \todo{} ep & $\approx$0.36 \\
+CUSTOM & \textbf{Reference notebook (StepLR)} & Baseline & 60 ep & $\approx$0.36 \\
 CUSTOM & GAP instead of Flatten (first version) & Fewer FC parameters; train F1 $\approx$0.42 & 30 ep & 0.440 \\
 CUSTOM & Phases 1--3 random search & Architecture, optimiser, regularisation & 15 ep (finalists 40) & 0.45--0.465 \\
 CUSTOM & Inverse-frequency class weights & Help minority classes & 40 ep & L10 0.431 vs 0.453 \\
@@ -75,7 +75,6 @@ ID & Date & Models (custom / ft) & CUSTOM & FT \\
 1038020 & 06 Nov & n07, train+val / -- & 0.49 & -- \\
 1038186 & 06 Nov & F3\_B\_038 / F1\_B\_037 & 0.47 & 0.47 \\
 1038323 & 06 Nov & CUSTOM ens.\ (5) / + TTA & 0.48 & \todo{} \\
-1040911/22 & 07 Nov & \todo{models?} & 0.47/0.48 & \todo{} \\
 \textbf{1042782} & \textbf{08 Nov} & \textbf{n07\_60ep / swin\_p2\_1} & \textbf{0.50} & \textbf{0.49} \\
 \bottomrule
 \end{tabular}}
