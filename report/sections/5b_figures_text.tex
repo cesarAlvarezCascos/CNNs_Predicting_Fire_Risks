@@ -12,13 +12,13 @@
   \includegraphics[width=\linewidth]{figures/confusion_ft.png}
   \caption{FT (Swin-T)}
 \end{subfigure}
-\caption{Validation confusion matrices, row-normalised (\%); rows = true class, columns = predicted class.}
+\caption{Validation confusion matrices ($224\times224$ centre crop, as used for model selection), row-normalised (\%); rows = true class, columns = predicted class.}
 \label{fig:cm}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.78\linewidth]{figures/errors_grid.png}
+\includegraphics[width=0.7\linewidth]{figures/errors_grid.png}
 \caption{Validation errors of both models: per true class, the shared error with the most confident FT prediction (chosen automatically).}
 \label{fig:errors}
 \end{figure}
