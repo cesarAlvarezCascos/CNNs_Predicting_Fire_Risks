@@ -21,9 +21,7 @@
 \begin{itemize}
   \item \textbf{GAP instead of Flatten:} the Flatten FC layer held $\sim$99\% of the parameters and scored lower.
   \item \textbf{Two $3\times3$ convs + BatchNorm per block:} same receptive field as $5\times5$, fewer weights, stabler training.
-  \item \textbf{Wider (48 base channels):} $+0.03$. Going further (64 channels, 5 blocks, bigger crops) did not help.
-  \item \textbf{GAP as a plain mean:} \code{AdaptiveAvgPool2d} has a non-deterministic CUDA backward.
-\end{itemize}
+  \item \textbf{Wider (48 base channels):} $+0.03$. Going further (64 channels, 5 blocks, bigger crops) did not help.\end{itemize}
 
 % 2.3 Guide: architecture, weights, pretraining dataset, new 7-output layer, frozen/updated
 % layers, preprocessing matching the weights, per-group learning rates.
