@@ -65,19 +65,20 @@ Accuracy & & & .535 & .577 \\
 \end{tabular}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.51\linewidth}\centering
-\captionof{table}{Public CodaBench macro-F1 (fixed undisclosed test subset). Also: F1\_B\_037 0.47, swin\_p2\_0 0.48, r50\_p2\_0 0.47.}
+\captionof{table}{Public CodaBench macro-F1 (fixed undisclosed test subset). Bold: final submission with the selected models.}
 \label{tab:submissions}
-\begin{tabular}{@{}l l l c c@{}}
+\resizebox{\linewidth}{!}{\begin{tabular}{@{}l l l c c@{}}
 \toprule
 ID & Date & Models (custom / ft) & CUSTOM & FT \\
 \midrule
 1036062 & 05 Nov & p4\_09\_B / placeholder & 0.49 & -- \\
-\todo{} & \todo{} & n07 (train+val) / \todo{} & 0.494 & \todo{} \\
-\todo{} & \todo{} & F3\_B\_038 / AlexNet & 0.47 & \todo{} \\
-\todo{} & \todo{} & \todo{} / swin\_p2\_1 & \todo{} & 0.48 \\
-\todo{} & \todo{} & \todo{} / FT ensemble (3) & \todo{} & 0.48 \\
+1038020 & 06 Nov & n07, train+val / -- & 0.49 & -- \\
+1038186 & 06 Nov & F3\_B\_038 / F1\_B\_037 & 0.47 & 0.47 \\
+1038323 & 06 Nov & CUSTOM ens.\ (5) / + TTA & 0.48 & \todo{} \\
+1040911/22 & 07 Nov & \todo{models?} & 0.47/0.48 & \todo{} \\
+\textbf{1042782} & \textbf{08 Nov} & \textbf{n07\_60ep / swin\_p2\_1} & \textbf{0.50} & \textbf{0.49} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 
 \vspace{3pt}
 \captionof{table}{Final CUSTOM architecture.}\label{tab:arch}
