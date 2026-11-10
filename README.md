@@ -4,7 +4,17 @@ Audio Processing, Video Processing and Computer Vision  · UC3M · 2026/27
 
 Classification of satellite images into 7 fire-risk classes with CNNs: a custom network trained from scratch and a fine-tuned pretrained network. Everything lives in `Lab_4_AVCV_.ipynb`.
 
-> **Just want to run it?** See [HOW_TO_RUN.md](HOW_TO_RUN.md): the self-contained `Lab_4_AVCV_NoDependencies.ipynb` only needs `db.zip`.
+## Running the notebooks
+
+Step-by-step instructions are in [HOW_TO_RUN.md](HOW_TO_RUN.md). There are two versions of the same notebook:
+
+| Notebook | Reads | Use it when |
+|---|---|---|
+| `Lab_4_AVCV_NoDependencies.ipynb` | only `db.zip`; the two final models are written in the notebook | you just want to reproduce our submission (e.g. to grade it) |
+| `Lab_4_AVCV_.ipynb` | `db.zip` + `final/*_final_config.json` (+ `search/` results) | you want to change the final model without editing code: the JSON files choose the model and its settings |
+
+- **Hyperparameter search**: `RUN_SEARCH = 1` in the first code cell re-runs it (many hours): custom phases 1–2 (random search with pruning), 3 (finalists), 4–5 (targeted changes), and the fine-tuning search (10 configurations per network, then the best 2 for 30 epochs). `RUN_SEARCH = 0` (default) skips it and only shows stored results.
+- **Retraining or not**: training from scratch takes ~1 h on a T4 and needs no extra files; skipping it needs the `.pt` weights (`models` release). NoDependencies: `USE_CHECKPOINTS = False` (default, retrain) or `True` (load the `.pt`). Main notebook: `"mode": "retrain"` or `"checkpoint"` (current default) in the JSON files.
 
 ## Dataset
 
@@ -79,8 +89,3 @@ What you can change:
 | `submitted_csv_sha256` | If set, the new predictions are compared with `final/output_*_submitted.csv`. `null` skips the check. |
 
 Two switches in the first code cell complete the picture: `RUN_SEARCH = 1` re-runs the hyperparameter search (writes `search/` and new weights), and `SMOKE_TEST = 1` uses 64 training images and one epoch, only to check that everything executes.
-
-Typical uses:
-- **Reproduce our submission**: keep the files as they are (`mode: "checkpoint"`) and run all cells.
-- **Retrain the known best model** without searching: `RUN_SEARCH = 0`, `mode: "retrain"`.
-- **Start from scratch / another dataset**: `RUN_SEARCH = 1`, then add the winning configuration as a candidate, set `selected`, and run again with `mode: "retrain"`.
